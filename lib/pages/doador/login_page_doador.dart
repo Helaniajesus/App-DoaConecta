@@ -1,4 +1,4 @@
-import 'package:doa_conecta_app/pages/doador/cadastro_page_doador.dart';
+import 'package:doa_conecta_app/pages/doador/cadastro/cadastro_page_doador.dart';
 import 'package:doa_conecta_app/pages/doador/main_page_doador.dart';
 
 import 'package:flutter/material.dart';
@@ -216,7 +216,7 @@ class _LoginPageDoadorState extends State<LoginPageDoador> {
                   child: InkWell(
                     onTap: () {
                       // Navegar para a nova página aqui
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => ContaDoadorPage()));
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => CadastroPageDoador()));
                     },
                     child: Text(
                       "Criar conta",

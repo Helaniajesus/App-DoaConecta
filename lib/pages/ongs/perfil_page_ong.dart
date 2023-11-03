@@ -1,4 +1,5 @@
-import 'package:doa_conecta_app/pages/ongs/configuracoes_page_ong.dart';
+import 'package:doa_conecta_app/pages/ongs/opcoes_configuracoes_page_ong.dart';
+import 'package:doa_conecta_app/pages/ongs/editar_perfil_ong.dart';
 import 'package:flutter/material.dart';
 
 class PerfilOngPage extends StatefulWidget {
@@ -17,7 +18,8 @@ class _PerfilOngPageState extends State<PerfilOngPage> {
         centerTitle: true,
         automaticallyImplyLeading: false,
         leadingWidth: 100.0,
-        title: const Text("Perfil"),
+        title: Text("Perfil"),
+        //---------------------- BOTAO EDITAR PERFIL ----------------------------//
         actions: [
           IconButton(
             onPressed: () {
@@ -27,12 +29,13 @@ class _PerfilOngPageState extends State<PerfilOngPage> {
                 ),
                 context: context,
                 builder: (context) {
-                  return ConfiguracoesOng();
+                  return EditarPerfilOng();
                 },
               );
             },
-            icon: const Icon(Icons.add),
+            icon: Icon(Icons.add),
           ),
+          //-------------------- BOTAO CONFIGURACOES -----------------------------//
           IconButton(
             onPressed: () {
               showModalBottomSheet(
@@ -45,10 +48,11 @@ class _PerfilOngPageState extends State<PerfilOngPage> {
                 },
               );
             },
-            icon: const Icon(Icons.settings),
+            icon: Icon(Icons.settings),
           ),
         ],
       ),
+      //------------------------ CORPO DA PAGINA -----------------------------//
       body: Stack(
         children: [
           SingleChildScrollView(
@@ -101,7 +105,6 @@ class _PerfilOngPageState extends State<PerfilOngPage> {
                   ),
                   const SizedBox(height: 16),
                   //--------------- DIVISÃO FOTOS -----------------//
-                  // ignore: sized_box_for_whitespace
                   Container(
                     height: 2, // Ajuste a altura desejada
                     child: const Divider(

@@ -1,4 +1,4 @@
-import 'package:doa_conecta_app/pages/ongs/cadastro_page_ong.dart';
+import 'package:doa_conecta_app/pages/ongs/cadastro/cadastro_page_ong.dart';
 import 'package:doa_conecta_app/pages/ongs/main_page_ong.dart';
 
 import 'package:flutter/material.dart';
@@ -205,27 +205,27 @@ class _LoginPageOngState extends State<LoginPageOng> {
                 ),
 
                 //------------------------CRIAR CONTA---------------------------------//
-               Container(
-  margin: const EdgeInsets.symmetric(horizontal: 30),
-  height: 30,
-  alignment: Alignment.center,
-  child: TextButton(
-    onPressed: () {
-      // Adicione aqui a navegação para a página de cadastro
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const CadastroPageOng(),
-        ),
-      );
-    },
-    child: const Text(
-      "Criar conta",
-      style: TextStyle(
+                Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 30),
+                  height: 30,
+                  alignment: Alignment.center,
+                  child: InkWell(
+                    onTap: () {
+                      // Navegar para a nova página aqui
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => CadastroPageOng()));
+                    },
+                    child: Text(
+                      "Criar conta",
+                      style: TextStyle(
                         color: Color.fromARGB(255, 151, 21, 21),
-                        fontWeight: FontWeight.w400),
+                        fontWeight: FontWeight.w400,
+                      ),
                     ),
                   ),
+                ),
+
+                const SizedBox(
+                  height: 60,
                 ),
               ],
             ),

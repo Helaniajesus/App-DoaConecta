@@ -1,14 +1,15 @@
 import 'package:doa_conecta_app/pages/quem_sou_eu_page.dart';
 import 'package:flutter/material.dart';
 
-class ConfiguracoesDoadorPage extends StatefulWidget {
-  const ConfiguracoesDoadorPage({Key? key}) : super(key: key);
+class ConfiguracoesAppOngPage extends StatefulWidget {
+  const ConfiguracoesAppOngPage({Key? key}) : super(key: key);
 
   @override
-  State<ConfiguracoesDoadorPage> createState() => _ConfiguracoesDoadorPageState();
+  State<ConfiguracoesAppOngPage> createState() =>
+      _ConfiguracoesAppOngPageState();
 }
 
-class _ConfiguracoesDoadorPageState extends State<ConfiguracoesDoadorPage> {
+class _ConfiguracoesAppOngPageState extends State<ConfiguracoesAppOngPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(

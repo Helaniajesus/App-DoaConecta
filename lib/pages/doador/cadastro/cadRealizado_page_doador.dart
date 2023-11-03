@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'login_page_ong.dart';
+import '../login_page_doador.dart';
 
 class CadRealizadoPageOng extends StatelessWidget {
   const CadRealizadoPageOng({Key? key}) : super(key: key);
@@ -13,6 +13,7 @@ class CadRealizadoPageOng extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.green,
         title: const Text("Cadastro Realizado"),
+        automaticallyImplyLeading: false,
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -50,7 +51,7 @@ class CadRealizadoPageOng extends StatelessWidget {
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => const LoginPageOng(),
+                  builder: (context) => const LoginPageDoador(),
                 ),
               );
             },

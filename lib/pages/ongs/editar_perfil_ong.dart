@@ -1,6 +1,7 @@
+import 'package:doa_conecta_app/pages/ongs/configuracoes_app_page_ong.dart';
 import 'package:flutter/material.dart';
 
-class ConfiguracoesOng extends StatelessWidget {
+class EditarPerfilOng extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -12,10 +13,10 @@ class ConfiguracoesOng extends StatelessWidget {
       child: Column(
         children: <Widget>[
           const SizedBox(height: 20),
-          //------------------------ OPÇÃO MEUS DADOS ------------------------//
+          //------------------------ OPÇÃO EDITAR PERFIL ------------------------//
           buildProfileOption(
-            title: 'Meus Dados',
-            icon: Icons.person,
+            title: 'Editar perfil',
+            icon: Icons.edit,
             onPressed: () {
               // Navegar para a página de Meus Dados
             },
@@ -23,41 +24,26 @@ class ConfiguracoesOng extends StatelessWidget {
           Divider(),
           const SizedBox(height: 10),
 
-          //------------------------ OPÇÃO CONFIGURAÇÕES DO APP ------------------------//
+          //------------------------ OPÇÃO ADCIONAR FOTO ------------------------//
           buildProfileOption(
-            title: 'Configurações do Aplicativo',
-            icon: Icons.settings,
+            title: 'Adicionar foto',
+            icon: Icons.add_a_photo,
             onPressed: () {
-              // Navegar para a página de Configurações
+              /*Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ));*/
             },
           ),
           Divider(),
           const SizedBox(height: 10),
-
-          //------------------------ OPÇÃO AJUDA ------------------------//
-          buildProfileOption(
-            title: 'Ajuda',
-            icon: Icons.help,
-            onPressed: () {
-              // Navegar para a página de Ajuda
-            },
-          ),
-          Divider(),
-          const SizedBox(height: 10),
-
-          //------------------------ OPÇÃO SOBRE NOS ------------------------//
-          buildProfileOption(
-            title: 'Sobre Nós',
-            icon: Icons.info,
-            onPressed: () {
-              // Navegar para a página Sobre Nós
-            },
-          ),
         ],
       ),
     );
   }
 }
+
+//---------------------- configuracoes de estilo opcoes -----------------------//
 
 Widget buildProfileOption({
   required String title,
