@@ -1,3 +1,4 @@
+import 'package:doa_conecta_app/pages/doador/quero_doar_page.dart';
 import 'package:flutter/material.dart';
 
 class DoarDoadorPage extends StatefulWidget {
@@ -128,7 +129,10 @@ class _DoarDoadorPageState extends State<DoarDoadorPage> {
               minimumSize: MaterialStateProperty.all(const Size(200, 50)),
             ),
             onPressed: () {
-              // Ação ao pressionar o botão "Quero doar"
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => QueroDoarPage()));
             },
             child: const Text('Quero doar'),
           ),
