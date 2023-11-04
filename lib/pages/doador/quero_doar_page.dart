@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class QueroDoarPage extends StatelessWidget {
+  const QueroDoarPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -15,7 +17,10 @@ class QueroDoarPage extends StatelessWidget {
 }
 
 class DonationForm extends StatefulWidget {
+  const DonationForm({super.key});
+
   @override
+  // ignore: library_private_types_in_public_api
   _DonationFormState createState() => _DonationFormState();
 }
 
@@ -48,11 +53,11 @@ class _DonationFormState extends State<DonationForm> {
           
           const SizedBox(height: 20),
           //--------------------- Campo categoria do item ---------------------//
-          Container(
+          const SizedBox(
             width: double.infinity, // Ocupa a largura inteira
             child: Text('Categoria:'),
           ),
-          Container(
+          SizedBox(
             width: double.infinity, // Ocupa a largura inteira
             child: DropdownButton<String>(
               value: _selectedCategory,
@@ -78,27 +83,27 @@ class _DonationFormState extends State<DonationForm> {
           ),
           if (_showOtherCategory)
             TextFormField(
-              decoration: InputDecoration(labelText: 'Qual a categoria?'),
+              decoration: const InputDecoration(labelText: 'Qual a categoria?'),
             ),
           TextFormField(
             controller: _productNameController,
-            decoration: InputDecoration(labelText: 'Nome do Produto'),
+            decoration: const InputDecoration(labelText: 'Nome do Produto'),
           ),
           TextFormField(
             controller: _descriptionController,
-            decoration: InputDecoration(labelText: 'Descrição'),
+            decoration: const InputDecoration(labelText: 'Descrição'),
           ),
           TextFormField(
             controller: _qualityController,
-            decoration: InputDecoration(labelText: 'Estado de Qualidade'),
+            decoration: const InputDecoration(labelText: 'Estado de Qualidade'),
           ),
           TextFormField(
             controller: _sizeController,
-            decoration: InputDecoration(labelText: 'Tamanho'),
+            decoration: const InputDecoration(labelText: 'Tamanho'),
           ),
           TextFormField(
             controller: _addressController,
-            decoration: InputDecoration(labelText: 'Endereço de Retirada'),
+            decoration: const InputDecoration(labelText: 'Endereço de Retirada'),
           ),
           //-------------------------- Botão concluir ----------------------//
           const SizedBox(height: 20),
