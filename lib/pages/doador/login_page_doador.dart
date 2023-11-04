@@ -1,5 +1,6 @@
 import 'package:doa_conecta_app/pages/doador/cadastro/cadastro_page_doador.dart';
 import 'package:doa_conecta_app/pages/doador/main_page_doador.dart';
+import 'package:doa_conecta_app/pages/ongs/esqueciSenha_page_ong.dart';
 
 import 'package:flutter/material.dart';
 
@@ -196,17 +197,23 @@ class _LoginPageDoadorState extends State<LoginPageDoador> {
                 Expanded(child: Container()),
 
                 //-----------------ESQUECI MINHA SENHA-----------------------------//
-                Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 30),
-                  height: 30,
-                  alignment: Alignment.center,
-                  child: const Text(
-                    "Esqueci minha senha",
-                    style: TextStyle(
-                        color: Color.fromARGB(255, 151, 21, 21),
-                        fontWeight: FontWeight.w400),
+                 Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 30),
+                    height: 30,
+                    alignment: Alignment.center,
+                    child: InkWell(
+                      onTap: () {
+                        // Navegar para a página de recuperação de senha
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => EsqueciSenhaPageOng()));
+                      },
+                      child: const Text(
+                        "Esqueci minha senha",
+                        style: TextStyle(
+                            color: Color.fromARGB(255, 151, 21, 21),
+                            fontWeight: FontWeight.w400),
+                      ),
+                    ),
                   ),
-                ),
 
                 //------------------------CRIAR CONTA---------------------------------//
                 Container(
@@ -218,7 +225,7 @@ class _LoginPageDoadorState extends State<LoginPageDoador> {
                       // Navegar para a nova página aqui
                       Navigator.push(context, MaterialPageRoute(builder: (context) => CadastroPageDoador()));
                     },
-                    child: Text(
+                    child: const Text(
                       "Criar conta",
                       style: TextStyle(
                         color: Color.fromARGB(255, 151, 21, 21),
