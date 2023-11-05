@@ -1,6 +1,6 @@
 import 'package:doa_conecta_app/pages/doador/cadastro/cadastro_page_doador.dart';
 import 'package:doa_conecta_app/pages/doador/main_page_doador.dart';
-import 'package:doa_conecta_app/pages/ongs/esqueciSenha_page_ong.dart';
+import 'package:doa_conecta_app/pages/ongs/esqueci_senha/esqueciSenha_page_ong.dart';
 
 import 'package:flutter/material.dart';
 
@@ -194,7 +194,7 @@ class _LoginPageDoadorState extends State<LoginPageDoador> {
                         )),
                   ),
                 ),
-                Expanded(child: Container()),
+                //Expanded(child: Container()),
 
                 //-----------------ESQUECI MINHA SENHA-----------------------------//
                  Container(

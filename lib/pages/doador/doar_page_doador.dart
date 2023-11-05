@@ -1,5 +1,8 @@
+import 'package:doa_conecta_app/pages/doador/doacao_page_doador.dart';
 import 'package:doa_conecta_app/pages/doador/quero_doar_page.dart';
+import 'package:doa_conecta_app/doacao.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class DoarDoadorPage extends StatefulWidget {
   const DoarDoadorPage({Key? key}) : super(key: key);
@@ -7,27 +10,42 @@ class DoarDoadorPage extends StatefulWidget {
   @override
   State<DoarDoadorPage> createState() => _DoarDoadorPageState();
 }
-//-------------CLASSE DOACAO-----------------------//
-class Donation {
-  final String title;
-  final String status;
-  final String date;
-  final String imageUrl;
-
-  Donation(this.title, this.status, this.date, this.imageUrl);
-}
 
 class _DoarDoadorPageState extends State<DoarDoadorPage> {
 
   //----------- CRIAR DOACOES ----------------------//
   final List<Donation> openDonations = [
-    Donation('Doação Aberta 1', 'Aberta', '01/03/2023', 'url_da_imagem_1'),
-    Donation('Doação Aberta 2', 'Aberta', '31/05/2023', 'url_da_imagem_2'),
+    Donation(
+      'A123',
+      'Móveis',
+      'Sofá',
+      'Um sofá em ótimas condições',
+      'Boa',
+      '1.5m x 3.2m',
+      '123 Main St',
+      'url_da_imagem_1',
+      DateTime(2023, 3, 01),
+      DateTime(2023, 3, 10),
+      false,
+     '' 
+    ),
   ];
 
   final List<Donation> closedDonations = [
-    Donation('Doação Fechada 1', 'Fechada', '10/09/2023', 'url_da_imagem_3'),
-    Donation('Doação Fechada 2', 'Fechada', '1/02/2023', 'url_da_imagem_4'),
+    Donation(
+      'A123',
+      'Móveis',
+      'Sofá',
+      'Um sofá em ótimas condições',
+      'Boa',
+      '1.5m x 3.2m',
+      '123 Main St',
+      'url_da_imagem_1',
+      DateTime(2023, 3, 01),
+      DateTime(2023, 3, 10),
+      false,
+      'ONG Sonhar'
+    ),
   ];
 
   bool showOpenDonations = true;
@@ -46,7 +64,6 @@ class _DoarDoadorPageState extends State<DoarDoadorPage> {
         children: [
           Row(
             children: [
-              //------------- BOTAO DOAÇOES ABERTAS----------------//
               Expanded(
                 child: GestureDetector(
                   onTap: () {
@@ -64,7 +81,6 @@ class _DoarDoadorPageState extends State<DoarDoadorPage> {
                   ),
                 ),
               ),
-              //---------------- BOTAO DOACOES FECHADAS -------------------//
               Expanded(
                 child: GestureDetector(
                   onTap: () {
@@ -84,7 +100,6 @@ class _DoarDoadorPageState extends State<DoarDoadorPage> {
               ),
             ],
           ),
-          //------------- LISTA DE DOACOES --------------------------//
           Expanded(
             child: ListView.builder(
               itemCount: showOpenDonations
@@ -94,9 +109,15 @@ class _DoarDoadorPageState extends State<DoarDoadorPage> {
                 final donation = showOpenDonations
                     ? openDonations[index]
                     : closedDonations[index];
+                final formattedDate = DateFormat('dd/MM/yyyy').format(donation.dataPublicacao); // Formatar a data
                 return InkWell(
                   onTap: () {
-                    // Ação a ser executada quando o card for pressionado
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => DonationDetails(donation: donation),
+                      ),
+                    );
                   },
                   child: Padding(
                     padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
@@ -104,13 +125,13 @@ class _DoarDoadorPageState extends State<DoarDoadorPage> {
                       color: const Color.fromARGB(223, 255, 255, 255),
                       margin: const EdgeInsets.all(8),
                       child: Padding(
-                        padding: const EdgeInsets.all(10), // Espaçamento interno dentro do card
+                        padding: const EdgeInsets.all(10),
                         child: ListTile(
                           leading: CircleAvatar(
-                            backgroundImage: NetworkImage(donation.imageUrl),
+                            backgroundImage: NetworkImage(donation.fotos),
                           ),
-                          title: Text(donation.title),
-                          subtitle: Text('Data: ${donation.date}'),
+                          title: Text(donation.nomeProduto),
+                          subtitle: Text('Data: $formattedDate'),
                         ),
                       ),
                     ),
@@ -119,20 +140,22 @@ class _DoarDoadorPageState extends State<DoarDoadorPage> {
               },
             ),
           ),
-          //---------------------- BOTAO QUERO DOAR --------------------//
+          //------------------------BOTÃO QUERO DOAR ---------------------------//
           ElevatedButton(
             style: ButtonStyle(
               shape: MaterialStateProperty.all(RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10))),
+                borderRadius: BorderRadius.circular(10),
+              )),
               backgroundColor: MaterialStateProperty.all(Colors.green),
-              //definir tamanho botão
               minimumSize: MaterialStateProperty.all(const Size(200, 50)),
             ),
             onPressed: () {
               Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => QueroDoarPage()));
+                context,
+                MaterialPageRoute(
+                  builder: (context) => QueroDoarPage(),
+                ),
+              );
             },
             child: const Text('Quero doar'),
           ),

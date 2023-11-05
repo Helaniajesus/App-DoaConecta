@@ -1,8 +1,8 @@
+import 'package:doa_conecta_app/pages/ongs/esqueci_senha/senhaAlterada_page_ong.dart';
 import 'package:flutter/material.dart';
-import 'login_page_ong.dart';
 
-class SenhaAlteradaPageOng extends StatelessWidget {
-  const SenhaAlteradaPageOng({Key? key}) : super(key: key);
+class NovaSenhaPageOng extends StatelessWidget {
+  const NovaSenhaPageOng({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -11,7 +11,7 @@ class SenhaAlteradaPageOng extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.green,
-        title: const Text("Senha Alterada"),
+        title: const Text("Nova Senha"),
       ),
       body: Center(
         child: Column(
@@ -35,22 +35,21 @@ class SenhaAlteradaPageOng extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             const Text(
-              "Parabéns!",
+              "Nova senha",
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 10),
-            const Text(
-              "Sua senha foi alterada com sucesso",
-              style: TextStyle(fontSize: 16),
-            ),
+            // Formulário de senha
+            _buildPasswordInput("Senha"),
+            _buildPasswordInput("Confirmar Senha"),
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                // Navegue para a página de login
+                // Navegue para a página de senha alterada
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const LoginPageOng(),
+                    builder: (context) => const SenhaAlteradaPageOng(),
                   ),
                 );
               },
@@ -59,7 +58,7 @@ class SenhaAlteradaPageOng extends StatelessWidget {
                 minimumSize: MaterialStateProperty.all(const Size(200, 50)),
               ),
               child: const Text(
-                "Entrar",
+                "Continuar",
                 style: TextStyle(
                   color: Colors.black,
                   fontSize: 16,
@@ -68,6 +67,22 @@ class SenhaAlteradaPageOng extends StatelessWidget {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  // Função para construir campos de entrada de senha
+  Widget _buildPasswordInput(String label) {
+    return Container(
+      width: 250,
+      height: 50,
+      padding: const EdgeInsets.symmetric(horizontal: 10),
+      child: TextField(
+        obscureText: true,
+        decoration: InputDecoration(
+          labelText: label,
+          labelStyle: const TextStyle(fontWeight: FontWeight.bold),
         ),
       ),
     );

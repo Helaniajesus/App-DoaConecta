@@ -1,5 +1,5 @@
 import 'package:doa_conecta_app/pages/ongs/cadastro/cadastro_page_ong.dart';
-import 'package:doa_conecta_app/pages/ongs/esqueciSenha_page_ong.dart';
+import 'package:doa_conecta_app/pages/ongs/esqueci_senha/esqueciSenha_page_ong.dart';
 import 'package:doa_conecta_app/pages/ongs/main_page_ong.dart';
 
 import 'package:flutter/material.dart';
