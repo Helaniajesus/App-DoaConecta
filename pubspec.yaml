@@ -46,6 +46,8 @@ dependencies:
   gallery_saver: ^2.3.2
   image_cropper: ^4.0.1
 
+  geolocator: ^10.1.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

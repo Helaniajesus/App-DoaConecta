@@ -29,7 +29,7 @@ class _MainPageDoadorState extends State<MainPageDoador> {
                     posicaoPagina = value;
                   });
                 },
-                children: const [
+                children: [
                   ExplorarDoadorPage(),
                   DoarDoadorPage(),
                   ContatoPageDoador(),
