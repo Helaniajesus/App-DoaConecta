@@ -1,20 +1,25 @@
 import 'package:flutter/material.dart';
-import 'cadRealizado_page_doador.dart'; // Importe a página inicial aqui
+import 'cadRealizado_page_doador.dart'; 
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
+import 'package:doa_conecta_app/doador.dart';
+import 'package:doa_conecta_app/pages/doador/firebase/doador_firebase.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 
 class CadastrarDoadorPage extends StatelessWidget {
+  final Doador doador;
 
-   CadastrarDoadorPage({Key? key}) : super(key: key);
+  CadastrarDoadorPage({Key? key, required this.doador});
 
-     // Controladores para os campos de entrada de dados
-    TextEditingController telefoneController = TextEditingController();
-    TextEditingController emailController = TextEditingController();
-    TextEditingController senhaController = TextEditingController();
-    TextEditingController repetirSenhaController = TextEditingController();
+  // Controladores para os campos de entrada de dados
+  TextEditingController telefoneController = TextEditingController();
+  TextEditingController emailController = TextEditingController();
+  TextEditingController senhaController = TextEditingController();
+  TextEditingController repetirSenhaController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
-
     final _formKey = GlobalKey<FormState>();
 
     return Scaffold(
@@ -47,18 +52,15 @@ class CadastrarDoadorPage extends StatelessWidget {
                 ),
                 const SizedBox(height: 20),
                 // ------------ Campo de entrada para telefone --------------------//
-                
+
                 TextFormField(
                   controller: telefoneController,
-                  inputFormatters:  [maskFormatter],
+                  inputFormatters: [maskFormatter],
                   keyboardType: TextInputType.number,
-                  
                   decoration: const InputDecoration(
                     labelText: "Celular (*)",
                   ),
-
                   validator: validadorTelefone,
-                                
                 ),
                 const SizedBox(height: 10),
                 // ------------ Campo de entrada para o email--------------------//
@@ -90,8 +92,17 @@ class CadastrarDoadorPage extends StatelessWidget {
                 const SizedBox(height: 20),
                 // ------------ Botão para cadastro --------------------//
                 ElevatedButton(
-                  onPressed: () {
+                  onPressed: () async {
                     if (_formKey.currentState!.validate()) {
+                      doador.telefone = telefoneController.text;
+                      doador.email = emailController.text;
+                      doador.senha = senhaController.text;
+                      UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+                        email: emailController.text,
+                        password: senhaController.text,
+                      );
+                      String uid = userCredential.user!.uid;
+                      await salvarDadosNoFirebase(doador, uid);
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
@@ -123,54 +134,54 @@ class CadastrarDoadorPage extends StatelessWidget {
   //------------------Validação Formulario ---------------------------//
 
 //validação email
-String? validadorEmail(String? value) {
+  String? validadorEmail(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Campo obrigatório';
+    }
+    final emailRegExp =
+        RegExp(r'^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)*(\.[a-z]{2,3})$');
+    if (!emailRegExp.hasMatch(value)) {
+      return 'Email inválido';
+    }
+    return null;
+  }
+
+//validação telefone
+  String? validadorTelefone(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Campo obrigatório';
+    }
+    final TelRegExp = RegExp(r'^\(\d{2}\) \d{5}-\d{4}$');
+    if (!TelRegExp.hasMatch(value)) {
+      return 'Informe um telefone válido';
+    }
+    return null;
+  }
+
+  var maskFormatter = MaskTextInputFormatter(
+    mask: "(##) #####-####",
+    filter: {"#": RegExp(r'[0-9]')},
+  );
+
+//validação senha
+  String? validadorSenha(String? value) {
   if (value == null || value.isEmpty) {
     return 'Campo obrigatório';
-  }
-  final emailRegExp =
-      RegExp(r'^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)*(\.[a-z]{2,3})$');
-  if (!emailRegExp.hasMatch(value)) {
-    return 'Email inválido';
+  } else if (value.length < 6) {
+    return 'Senha precisa ter no mínimo 6 caracteres';
   }
   return null;
 }
 
-//validação email
-String? validadorTelefone(String? value) {
-  if (value == null || value.isEmpty) {
-    return 'Campo obrigatório';
+
+//validação confirmar senha
+  String? validadorConfirmacaoSenha(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Campo obrigatório';
+    }
+    if (value != senhaController.text) {
+      return 'As senhas não coincidem';
+    }
+    return null;
   }
-  final TelRegExp =
-      RegExp(r'^\(\d{2}\) \d{5}-\d{4}$');
-  if (!TelRegExp.hasMatch(value)) {
-    return 'Informe um telefone válido';
-  }
-  return null;
 }
-
-var maskFormatter = MaskTextInputFormatter(
-  mask: "(##) #####-####",
-  filter: {"#": RegExp(r'[0-9]')},
-);
-
-//validação email
-String? validadorSenha(String? value) {
-  if (value == null || value.isEmpty) {
-    return 'Campo obrigatório';
-  }
-  return null;
-}
-
-//validação email
-String? validadorConfirmacaoSenha(String? value) {
-  if (value == null || value.isEmpty) {
-    return 'Campo obrigatório';
-  }
-  if (value != senhaController.text) {
-    return 'As senhas não coincidem';
-  }
-  return null;
-}
-
-}
-

@@ -1,4 +1,6 @@
-import 'package:doa_conecta_app/pages/ongs/cadastro/cadastro2_page_ong.dart';
+import 'package:doa_conecta_app/doador.dart';
+import 'package:doa_conecta_app/pages/doador/cadastro/cadastro2_page_doador.dart';
+import 'package:doa_conecta_app/pages/doador/firebase/doador_firebase.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:brasil_fields/brasil_fields.dart';
@@ -132,13 +134,24 @@ class _CadastroPageDoadorState extends State<CadastroPageDoador> {
                 const SizedBox(height: 20),
                 //--------------------- Botão proxima página --------------------------------//
                 ElevatedButton(
-                  onPressed: () {
+                  onPressed: () async {
                     if (_formKey.currentState!.validate()) {
-                      // Adicione a ação aqui para navegar para a próxima página (CadastrarOngPage).
-                      Navigator.push(
+                      Doador usuario = Doador(
+                        nome: nomeOngController.text,
+                        cpf: cpfController.text,
+                        dataNascimento: dataNascimento ?? DateTime.now(),
+                        endereco: enderecoController.text,
+                        numero: numeroController.text,
+                        complemento: complementoController.text,
+                        telefone: "", // Coloque o valor correto se houver
+                        email: "", // Coloque o valor correto se houver
+                        senha: "", // Coloque o valor correto se houver
+                      );
+
+                      await Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => CadastrarOngPage(),
+                          builder: (context) => CadastrarDoadorPage(doador: usuario),
                         ),
                       );
                     }

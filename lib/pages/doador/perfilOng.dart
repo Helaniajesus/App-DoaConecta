@@ -19,7 +19,7 @@ class _VerPerfilOngPage extends State<VerPerfilOngPage> {
         centerTitle: true,
         leadingWidth: 100.0,
         title: Text("Perfil"),
-        //---------------------- BOTAO EDITAR PERFIL ----------------------------//
+        //---------------------- BOTAO MENSAGEM ----------------------------//
         actions: [
           IconButton(
             onPressed: () {

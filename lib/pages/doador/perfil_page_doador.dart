@@ -1,4 +1,5 @@
 import 'package:doa_conecta_app/pages/doador/configuracoes_page_doador.dart';
+import 'package:doa_conecta_app/pages/doador/meus_dados_page.dart';
 import 'package:flutter/material.dart';
 
 class PerfilDoadorPage extends StatefulWidget {
@@ -44,7 +45,10 @@ class _PerfilDoadorPageState extends State<PerfilDoadorPage> {
             title: 'Meus Dados',
             icon: Icons.person,
             onPressed: () {
-              // Navegar para a página de Meus Dados
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const ProfilePage()));
             },
           ),
           Divider(),

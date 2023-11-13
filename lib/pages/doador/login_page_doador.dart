@@ -3,6 +3,7 @@ import 'package:doa_conecta_app/pages/doador/main_page_doador.dart';
 import 'package:doa_conecta_app/pages/ongs/esqueci_senha/esqueciSenha_page_ong.dart';
 
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class LoginPageDoador extends StatefulWidget {
   const LoginPageDoador({Key? key}) : super(key: key);
@@ -12,11 +13,13 @@ class LoginPageDoador extends StatefulWidget {
 }
 
 class _LoginPageDoadorState extends State<LoginPageDoador> {
-  var emailController = TextEditingController(text: "email@email.com");
-  var senhaController = TextEditingController(text: "123");
+  var emailController = TextEditingController(text:"teste.silva@gmail.com");
+  var senhaController = TextEditingController(text:"123456");
   bool isObscureText = true;
   Color deepRed = const Color.fromARGB(255, 128, 0, 0);
 
+  // FirebaseAuth instance
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
   @override
   Widget build(BuildContext context) {
@@ -50,8 +53,7 @@ class _LoginPageDoadorState extends State<LoginPageDoador> {
                           image: logoImage,
                           width: 120,
                           height: 170,
-                          alignment: Alignment.center
-                      ),
+                          alignment: Alignment.center),
                     ),
                     Expanded(child: Container()),
                   ],
@@ -90,24 +92,30 @@ class _LoginPageDoadorState extends State<LoginPageDoador> {
                     },
                     style: const TextStyle(color: Colors.black),
                     decoration: const InputDecoration(
-                        contentPadding: EdgeInsets.only(top: 0),
-                        enabledBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(
-                                color: Colors.green)),
-                        focusedBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(
-                                color: Color.fromARGB(255, 141, 79, 151))),
-                        hintText: "Email",
-                        hintStyle: TextStyle(color: Colors.green),
-                        prefixIcon: Icon(
-                          Icons.person,
-                          color: Colors.green,
-                        )),
+                      contentPadding: EdgeInsets.only(top: 0),
+                      enabledBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.green),
+                      ),
+                      focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(
+                            color: Color.fromARGB(255, 141, 79, 151)),
+                      ),
+                      hintText: "Email",
+                      hintStyle: TextStyle(color: Colors.black),
+                      prefixIcon: Icon(
+                        Icons.person,
+                        color: Colors.green,
+                      ),
+                    ),
+                    // Remova o autofillHints
+                    autofillHints: [],
                   ),
                 ),
+
                 const SizedBox(
                   height: 15,
                 ),
+
                 //-----------------------COMPO SENHA--------------------------//
                 Container(
                   width: double.infinity,
@@ -124,16 +132,14 @@ class _LoginPageDoadorState extends State<LoginPageDoador> {
                     decoration: InputDecoration(
                         contentPadding: const EdgeInsets.only(top: 0),
                         enabledBorder: const UnderlineInputBorder(
-                            borderSide: BorderSide(
-                                color: Colors.green)),
+                            borderSide: BorderSide(color: Colors.green)),
                         focusedBorder: const UnderlineInputBorder(
-                            borderSide: BorderSide(
-                                color:  Colors.green)),
+                            borderSide: BorderSide(color: Colors.green)),
                         hintText: "Senha",
                         hintStyle: const TextStyle(color: Colors.black),
                         prefixIcon: const Icon(
                           Icons.lock,
-                          color:  Colors.green,
+                          color: Colors.green,
                         ),
                         suffixIcon: InkWell(
                           onTap: () {
@@ -162,28 +168,39 @@ class _LoginPageDoadorState extends State<LoginPageDoador> {
                   child: SizedBox(
                     width: double.infinity,
                     child: TextButton(
-                        onPressed: () {
-                          if (emailController.text.trim() ==
-                                  "email@email.com" &&
-                              senhaController.text.trim() == "123") {
+                        onPressed: () async {
+                          try {
+                            // Sign in with email and password
+                            UserCredential userCredential =
+                                await _auth.signInWithEmailAndPassword(
+                              email: emailController.text.trim(),
+                              password: senhaController.text.trim(),
+                            );
                             Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => const MainPageDoador()));
-                          } else {
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const MainPageDoador(),
+                              ),
+                            );
+                          } catch (e) {
+                            // Handle login errors
+                            print("Error during login: $e");
                             ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                    content: Text("Erro ao efetuar o login")));
+                              const SnackBar(
+                                content: Text("Erro ao efetuar o login"),
+                              ),
+                            );
                           }
                         },
                         style: ButtonStyle(
-                            shape: MaterialStateProperty.all(
-                                RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10))),
-                            backgroundColor: MaterialStateProperty.all(
-                              Colors.green),
-                              //definir tamanho botão
-                            minimumSize: MaterialStateProperty.all(const Size(200, 50)),
+                          shape: MaterialStateProperty.all(
+                              RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10))),
+                          backgroundColor:
+                              MaterialStateProperty.all(Colors.green),
+                          //definir tamanho botão
+                          minimumSize:
+                              MaterialStateProperty.all(const Size(200, 50)),
                         ),
                         child: const Text(
                           "ENTRAR",
@@ -197,23 +214,26 @@ class _LoginPageDoadorState extends State<LoginPageDoador> {
                 //Expanded(child: Container()),
 
                 //-----------------ESQUECI MINHA SENHA-----------------------------//
-                 Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 30),
-                    height: 30,
-                    alignment: Alignment.center,
-                    child: InkWell(
-                      onTap: () {
-                        // Navegar para a página de recuperação de senha
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => EsqueciSenhaPageOng()));
-                      },
-                      child: const Text(
-                        "Esqueci minha senha",
-                        style: TextStyle(
-                            color: Color.fromARGB(255, 151, 21, 21),
-                            fontWeight: FontWeight.w400),
-                      ),
+                Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 30),
+                  height: 30,
+                  alignment: Alignment.center,
+                  child: InkWell(
+                    onTap: () {
+                      // Navegar para a página de recuperação de senha
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => EsqueciSenhaPageOng()));
+                    },
+                    child: const Text(
+                      "Esqueci minha senha",
+                      style: TextStyle(
+                          color: Color.fromARGB(255, 151, 21, 21),
+                          fontWeight: FontWeight.w400),
                     ),
                   ),
+                ),
 
                 //------------------------CRIAR CONTA---------------------------------//
                 Container(
@@ -223,7 +243,10 @@ class _LoginPageDoadorState extends State<LoginPageDoador> {
                   child: InkWell(
                     onTap: () {
                       // Navegar para a nova página aqui
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => CadastroPageDoador()));
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => CadastroPageDoador()));
                     },
                     child: const Text(
                       "Criar conta",
