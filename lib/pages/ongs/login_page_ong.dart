@@ -3,6 +3,7 @@ import 'package:doa_conecta_app/pages/ongs/esqueci_senha/esqueciSenha_page_ong.d
 import 'package:doa_conecta_app/pages/ongs/main_page_ong.dart';
 
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class LoginPageOng extends StatefulWidget {
   const LoginPageOng({Key? key}) : super(key: key);
@@ -12,10 +13,13 @@ class LoginPageOng extends StatefulWidget {
 }
 
 class _LoginPageOngState extends State<LoginPageOng> {
-  var emailController = TextEditingController(text: "email@email.com");
-  var senhaController = TextEditingController(text: "123");
+  var emailController = TextEditingController(/*text: "ong.a@gmail.com"*/);
+  var senhaController = TextEditingController(/*text: "123456"*/);
   bool isObscureText = true;
   Color deepRed = const Color.fromARGB(255, 128, 0, 0);
+
+    // FirebaseAuth instance
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
   @override
   Widget build(BuildContext context) {
@@ -157,18 +161,28 @@ class _LoginPageOngState extends State<LoginPageOng> {
                   child: SizedBox(
                     width: double.infinity,
                     child: TextButton(
-                        onPressed: () {
-                          if (emailController.text.trim() ==
-                                  "email@email.com" &&
-                              senhaController.text.trim() == "123") {
+                       onPressed: () async {
+                          try {
+                            // Sign in with email and password
+                            UserCredential userCredential =
+                                await _auth.signInWithEmailAndPassword(
+                              email: emailController.text.trim(),
+                              password: senhaController.text.trim(),
+                            );
                             Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => const MainPageOng()));
-                          } else {
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const MainPageOng(),
+                              ),
+                            );
+                          } catch (e) {
+                            // Handle login errors
+                            print("Error during login: $e");
                             ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                    content: Text("Erro ao efetuar o login")));
+                              const SnackBar(
+                                content: Text("Erro ao efetuar o login"),
+                              ),
+                            );
                           }
                         },
                         style: ButtonStyle(
@@ -190,9 +204,8 @@ class _LoginPageOngState extends State<LoginPageOng> {
                         )),
                   ),
                 ),
-                Expanded(child: Container()),
 
-                                  //-----------------ESQUECI MINHA SENHA-----------------------------//
+              //-----------------ESQUECI MINHA SENHA-----------------------------//
                   Container(
                     margin: const EdgeInsets.symmetric(horizontal: 30),
                     height: 30,

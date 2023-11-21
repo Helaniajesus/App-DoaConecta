@@ -106,7 +106,7 @@ class CadastrarDoadorPage extends StatelessWidget {
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const CadRealizadoPageOng(),
+                          builder: (context) => const CadRealizadoPageDoador(),
                         ),
                       );
                     }

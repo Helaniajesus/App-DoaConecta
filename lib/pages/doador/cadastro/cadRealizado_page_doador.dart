@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import '../login_page_doador.dart';
 
-class CadRealizadoPageOng extends StatelessWidget {
-  const CadRealizadoPageOng({Key? key}) : super(key: key);
+class CadRealizadoPageDoador extends StatelessWidget {
+  const CadRealizadoPageDoador({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

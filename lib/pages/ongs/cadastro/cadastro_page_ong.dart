@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:brasil_fields/brasil_fields.dart';
 import 'package:flutter/services.dart';
+import 'package:doa_conecta_app/ong.dart';
 
 class CadastroPageOng extends StatefulWidget {
   const CadastroPageOng({Key? key}) : super(key: key);
@@ -15,7 +16,7 @@ class _CadastroPageOngState extends State<CadastroPageOng> {
   TextEditingController nomeOngController = TextEditingController();
   TextEditingController cnpjController = TextEditingController();
   TextEditingController dataCriacaoController = TextEditingController();
-  TextEditingController cepController = TextEditingController();
+ // TextEditingController cepController = TextEditingController();
   TextEditingController enderecoController = TextEditingController();
   TextEditingController numeroController = TextEditingController();
   TextEditingController complementoController = TextEditingController();
@@ -104,6 +105,15 @@ class _CadastroPageOngState extends State<CadastroPageOng> {
                   validator: validadorData,
                 ),
                 const SizedBox(height: 10),
+                //--------------------- Campo CEP ONG --------------------------------//
+              /*  TextFormField(
+                  controller: cepController,
+                  decoration: const InputDecoration(
+                    labelText: "CEP (*)",
+                  ),
+                  //validator: validadorCPE,
+                ),
+                const SizedBox(height: 10),*/
                 //--------------------- Campo Endereço ONG --------------------------------//
                 TextFormField(
                   controller: enderecoController,
@@ -132,13 +142,25 @@ class _CadastroPageOngState extends State<CadastroPageOng> {
                 const SizedBox(height: 20),
                 //--------------------- Botão proxima página --------------------------------//
                 ElevatedButton(
-                  onPressed: () {
+                   onPressed: () async {
                     if (_formKey.currentState!.validate()) {
-                      // Adicione a ação aqui para navegar para a próxima página (CadastrarOngPage).
-                      Navigator.push(
+                      ONG ong = ONG(
+                        nome: nomeOngController.text,
+                        cnpj: cnpjController.text,
+                        dataCriacao: dataCriacao ?? DateTime.now(),
+                       // cep: cepController.text,
+                        endereco: enderecoController.text,
+                        numero: numeroController.text,
+                        complemento: complementoController.text,
+                        telefone: "", // Coloque o valor correto se houver
+                        email: "", // Coloque o valor correto se houver
+                        senha: "", // Coloque o valor correto se houver
+                      );
+
+                      await Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => CadastrarOngPage(),
+                          builder: (context) => CadastrarOngPage(ong: ong),
                         ),
                       );
                     }

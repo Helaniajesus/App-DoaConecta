@@ -1,3 +1,5 @@
+import 'package:doa_conecta_app/doacao.dart';
+import 'package:doa_conecta_app/pages/doador/firebase/doacao_firebase.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gallery_saver/gallery_saver.dart';
@@ -6,6 +8,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
 import 'package:path/path.dart';
 import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class QueroDoarPage extends StatelessWidget {
   const QueroDoarPage({super.key});
@@ -35,11 +39,14 @@ class _DonationFormState extends State<DonationForm> {
   String _selectedCategory = 'Móveis';
   bool _showOtherCategory = false;
 
-  final TextEditingController _productNameController = TextEditingController();
-  final TextEditingController _descriptionController = TextEditingController();
-  final TextEditingController _qualityController = TextEditingController();
-  final TextEditingController _sizeController = TextEditingController();
-  final TextEditingController _addressController = TextEditingController();
+  final TextEditingController _nomeProdutoController = TextEditingController();
+  final TextEditingController _descricaoController = TextEditingController();
+  final TextEditingController _qualidadeController = TextEditingController();
+  final TextEditingController _tamanhoController = TextEditingController();
+  final TextEditingController _enderecoController = TextEditingController();
+
+   List<XFile>? selectedImagePaths; // Change the type to List<XFile>?
+// Lista para armazenar imagens
 
   @override
   Widget build(BuildContext context) {
@@ -92,43 +99,29 @@ class _DonationFormState extends State<DonationForm> {
               decoration: const InputDecoration(labelText: 'Qual a categoria?'),
             ),
           TextFormField(
-            controller: _productNameController,
+            controller: _nomeProdutoController,
             decoration: const InputDecoration(labelText: 'Nome do Produto'),
           ),
           TextFormField(
-            controller: _descriptionController,
+            controller: _descricaoController,
             decoration: const InputDecoration(labelText: 'Descrição'),
           ),
           TextFormField(
-            controller: _qualityController,
+            controller: _qualidadeController,
             decoration: const InputDecoration(labelText: 'Estado de Qualidade'),
           ),
           TextFormField(
-            controller: _sizeController,
+            controller: _tamanhoController,
             decoration: const InputDecoration(labelText: 'Tamanho'),
           ),
           TextFormField(
-            controller: _addressController,
+            controller: _enderecoController,
             decoration: const InputDecoration(labelText: 'Endereço de Retirada'),
           ),
           //------------------ Botão upload imagem -------------------------//
           const SizedBox(height: 20),
           ElevatedButton(
             onPressed: () {
-            /*  Navigator.push(context, MaterialPageRoute(builder: (context) => CameraPage()));
-            },
-            style: ButtonStyle(
-              backgroundColor: MaterialStateProperty.all(Colors.grey),
-            ),
-            child: const Text(
-              "Upload imagem do item",
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 16,
-                fontWeight: FontWeight.w400,
-              ),
-            ),
-          ),*/
           showModalBottomSheet(
                   context: context,
                   builder: (_) {
@@ -184,9 +177,33 @@ class _DonationFormState extends State<DonationForm> {
           const SizedBox(height: 20),
           Center(
             child: ElevatedButton(
-              onPressed: () {
-                 Navigator.pop(context);
+              onPressed: () async {
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      String userId = user.uid;
+
+      List<String> imagePaths = convertXFileListToPaths(selectedImagePaths);
+
+      Donation newDonation = Donation(
+        categoria: _selectedCategory,
+        nomeProduto: _nomeProdutoController.text,
+        descricao: _descricaoController.text,
+        qualidade: _qualidadeController.text,
+        tamanho: _tamanhoController.text,
+        enderecoRetirada: _enderecoController.text,
+        fotosURLs: imagePaths,
+        dataPublicacao: DateTime.now(),
+        status: true,
+        idONG: '',
+        idDoador: userId,
+      );
+
+      await salvarDoacaoNoFirebase(newDonation);
+
+      Navigator.pop(context);
+    }
               },
+        
               style: ButtonStyle(
                 backgroundColor: MaterialStateProperty.all(Colors.green),
                 minimumSize: MaterialStateProperty.all(const Size(200, 50)),
@@ -239,17 +256,26 @@ class _DonationFormState extends State<DonationForm> {
     }
   }
 
-  void openImagePicker(ImageSource source) async {
-    final ImagePicker _picker = ImagePicker();
-    photo = await _picker.pickImage(source: source);
-    if (photo != null) {
-      String path = (await path_provider.getApplicationDocumentsDirectory()).path;
-      String name = basename(photo!.path);
-      await photo!.saveTo("$path/$name");
+     void openImagePicker(ImageSource source) async {
+  final ImagePicker _picker = ImagePicker();
+  XFile? photo = await _picker.pickImage(source: source);
+  if (photo != null) {
+    selectedImagePaths ??= [];
+    selectedImagePaths!.add(photo); // Store XFile directly
+    setState(() {});
+  }
+}
 
-      await GallerySaver.saveImage(photo!.path);
 
-      cropImage(photo!);
+    List<String> convertXFileListToPaths(List<XFile>? xFiles) {
+  List<String> paths = [];
+  if (xFiles != null) {
+    for (XFile xFile in xFiles) {
+      paths.add(xFile.path);
     }
   }
+  return paths;
+}
+
+
 }

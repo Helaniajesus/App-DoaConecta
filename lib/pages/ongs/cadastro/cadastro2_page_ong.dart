@@ -1,11 +1,15 @@
+import 'package:doa_conecta_app/ong.dart';
+import 'package:doa_conecta_app/pages/ongs/firebase_ong/ong_firebase.dart';
 import 'package:flutter/material.dart';
 import 'cadRealizado_page_ong.dart'; // Importe a página inicial aqui
 import 'package:flutter/services.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class CadastrarOngPage extends StatelessWidget {
+  final ONG ong;
 
-   CadastrarOngPage({Key? key}) : super(key: key);
+   CadastrarOngPage({Key? key, required this.ong});
 
      // Controladores para os campos de entrada de dados
     TextEditingController telefoneController = TextEditingController();
@@ -91,8 +95,17 @@ class CadastrarOngPage extends StatelessWidget {
                 const SizedBox(height: 20),
                 // ------------ Botão para cadastro --------------------//
                 ElevatedButton(
-                  onPressed: () {
+                   onPressed: () async {
                     if (_formKey.currentState!.validate()) {
+                      ong.telefone = telefoneController.text;
+                      ong.email = emailController.text;
+                      ong.senha = senhaController.text;
+                      UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+                        email: emailController.text,
+                        password: senhaController.text,
+                      );
+                      String uid = userCredential.user!.uid;
+                      await salvarDadosNoFirebaseOng(ong, uid);
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
@@ -158,6 +171,8 @@ var maskFormatter = MaskTextInputFormatter(
 String? validadorSenha(String? value) {
   if (value == null || value.isEmpty) {
     return 'Campo obrigatório';
+  }else if (value.length < 6) {
+    return 'Senha precisa ter no mínimo 6 caracteres';
   }
   return null;
 }

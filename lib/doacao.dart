@@ -1,32 +1,30 @@
 //-------------CLASSE DOACAO-----------------------//
-import 'dart:core';
+import 'dart:io';
 
 class Donation {
-  final String codigo;
   final String categoria;
   final String nomeProduto;
   final String descricao;
   final String qualidade;
   final String tamanho;
   final String enderecoRetirada;
-  final String fotos;
+  List<String> fotosURLs;
   final DateTime dataPublicacao;
-  final DateTime dataRetirada;
   final bool status;
-  final String destinatario;
+  final String idONG;
+  final String idDoador;
 
-  Donation(
-    this.codigo,
-    this.categoria,
-    this.nomeProduto,
-    this.descricao,
-    this.qualidade,
-    this.tamanho,
-    this.enderecoRetirada,
-    this.fotos,
-    this.dataPublicacao,
-    this.dataRetirada,
-    this.status,
-    this.destinatario
-  );
+  Donation({
+    required this.categoria,
+    required this.nomeProduto,
+    required this.descricao,
+    required this.qualidade,
+    required this.tamanho,
+    required this.enderecoRetirada,
+     required this.fotosURLs,
+    required this.dataPublicacao,
+    required this.status,
+    required this.idONG,
+    required this.idDoador,
+  });
 }
