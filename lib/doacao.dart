@@ -2,6 +2,7 @@
 import 'dart:io';
 
 class Donation {
+  String id;
   final String categoria;
   final String nomeProduto;
   final String descricao;
@@ -15,6 +16,7 @@ class Donation {
   final String idDoador;
 
   Donation({
+    required this.id,
     required this.categoria,
     required this.nomeProduto,
     required this.descricao,

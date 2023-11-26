@@ -9,6 +9,7 @@ class ONG {
   String? telefone;
   String? email;
   String? senha;
+  String? fotoPerfil;
 
   ONG({
     required this.nome,
@@ -21,6 +22,7 @@ class ONG {
     this.telefone,
     this.email,
     this.senha,
+    this.fotoPerfil,
   });
 
    Map<String, dynamic> toMap() {

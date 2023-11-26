@@ -10,6 +10,7 @@ import 'package:path/path.dart';
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'dart:math';
 
 class QueroDoarPage extends StatelessWidget {
   const QueroDoarPage({super.key});
@@ -178,30 +179,34 @@ class _DonationFormState extends State<DonationForm> {
           Center(
             child: ElevatedButton(
               onPressed: () async {
-    User? user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      String userId = user.uid;
+                User? user = FirebaseAuth.instance.currentUser;
+                if (user != null) {
+                  String userId = user.uid;
 
-      List<String> imagePaths = convertXFileListToPaths(selectedImagePaths);
+                  List<String> imagePaths = convertXFileListToPaths(selectedImagePaths);
 
-      Donation newDonation = Donation(
-        categoria: _selectedCategory,
-        nomeProduto: _nomeProdutoController.text,
-        descricao: _descricaoController.text,
-        qualidade: _qualidadeController.text,
-        tamanho: _tamanhoController.text,
-        enderecoRetirada: _enderecoController.text,
-        fotosURLs: imagePaths,
-        dataPublicacao: DateTime.now(),
-        status: true,
-        idONG: '',
-        idDoador: userId,
-      );
+                  var random = Random();
+                  String idAleatorio ='${random.nextInt(10000)}${DateTime.now().millisecondsSinceEpoch}';
 
-      await salvarDoacaoNoFirebase(newDonation);
+                  Donation newDonation = Donation(
+                    id: idAleatorio,
+                    categoria: _selectedCategory,
+                    nomeProduto: _nomeProdutoController.text,
+                    descricao: _descricaoController.text,
+                    qualidade: _qualidadeController.text,
+                    tamanho: _tamanhoController.text,
+                    enderecoRetirada: _enderecoController.text,
+                    fotosURLs: imagePaths,
+                    dataPublicacao: DateTime.now(),
+                    status: true,
+                    idONG: '',
+                    idDoador: userId,
+                  );
 
-      Navigator.pop(context);
-    }
+                  await salvarDoacaoNoFirebase(newDonation);
+
+                  Navigator.pop(context);
+                }
               },
         
               style: ButtonStyle(

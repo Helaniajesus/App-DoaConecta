@@ -13,8 +13,8 @@ class LoginPageOng extends StatefulWidget {
 }
 
 class _LoginPageOngState extends State<LoginPageOng> {
-  var emailController = TextEditingController(/*text: "ong.a@gmail.com"*/);
-  var senhaController = TextEditingController(/*text: "123456"*/);
+  var emailController = TextEditingController(text: "ong.teste@gmail.com");
+  var senhaController = TextEditingController(text: "123456");
   bool isObscureText = true;
   Color deepRed = const Color.fromARGB(255, 128, 0, 0);
 
@@ -99,7 +99,7 @@ class _LoginPageOngState extends State<LoginPageOng> {
                             borderSide: BorderSide(
                                 color: Color.fromARGB(255, 141, 79, 151))),
                         hintText: "Email",
-                        hintStyle: TextStyle(color: Colors.green),
+                        hintStyle: TextStyle(color: Colors.black),
                         prefixIcon: Icon(
                           Icons.person,
                           color: Colors.green,

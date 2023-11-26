@@ -100,6 +100,7 @@ class CadastrarOngPage extends StatelessWidget {
                       ong.telefone = telefoneController.text;
                       ong.email = emailController.text;
                       ong.senha = senhaController.text;
+                  
                       UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
                         email: emailController.text,
                         password: senhaController.text,

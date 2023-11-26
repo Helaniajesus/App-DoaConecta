@@ -1,75 +1,8 @@
-/*import 'package:flutter/material.dart';
-
-class ExplorarDoadorPage extends StatefulWidget {
-  const ExplorarDoadorPage({Key? key}) : super(key: key);
-
-  @override
-  State<ExplorarDoadorPage> createState() => _ExplorarDoadorPageState();
-}
-
-class _ExplorarDoadorPageState extends State<ExplorarDoadorPage> {
-  @override
-  Widget build(BuildContext context) {
-     return Scaffold(
-      appBar: AppBar(
-          backgroundColor: Colors.green,
-          title: const Text("DoaConecta"),
-          centerTitle: true,
-          automaticallyImplyLeading: false,
-          leadingWidth: 100.0,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-
-        //-------------------- BARRA DE PESQUISA -----------------------------------//
-        child: SearchAnchor(
-          builder: (BuildContext context, SearchController controller) {
-            return SearchBar(
-              controller: controller,
-              padding: MaterialStateProperty.all<EdgeInsets>(
-                const EdgeInsets.symmetric(horizontal: 16.0),
-              ),
-              onTap: () {
-                controller.openView();
-              },
-              onChanged: (_) {
-                controller.openView();
-              },
-              leading: const Icon(Icons.search),
-            );
-          },
-          suggestionsBuilder: (BuildContext context, SearchController controller) {
-            return List<ListTile>.generate(5, (int index) {
-              final String item = 'item $index';
-              return ListTile(
-                title: Text(item),
-                onTap: () {
-                  setState(() {
-                    controller.closeView(item);
-                  });
-                },
-              );
-            });
-          },
-        ),
-      ),
-    ); 
-  }
-}*/
-
-
-
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:doa_conecta_app/ong.dart';
 import 'package:doa_conecta_app/pages/doador/notificacao/notificacao_page.dart';
 import 'package:doa_conecta_app/pages/doador/perfilOng.dart';
 import 'package:flutter/material.dart';
-
-class Ong {
-  final String nome;
-  final String endereco;
-  final String imagem;
-
-  Ong({required this.nome, required this.endereco, required this.imagem});
-}
 
 class ExplorarDoadorPage extends StatefulWidget {
   @override
@@ -77,56 +10,62 @@ class ExplorarDoadorPage extends StatefulWidget {
 }
 
 class _ExplorarDoadorPageState extends State<ExplorarDoadorPage> {
-  final List<Ong> ongs = [
-    Ong(
-      nome: 'ONG A',
-      endereco: 'Rua A, 123 - Pirituba',
-      imagem: 'https://via.placeholder.com/150',
-    ),
-    Ong(
-      nome: 'ONG B',
-      endereco: 'Avenida B, 456 - Pirituba',
-      imagem: 'https://via.placeholder.com/150',
-    ),
-    Ong(
-      nome: 'ONG C',
-      endereco: 'Travessa C, 789 - Pirituba',
-      imagem: 'https://via.placeholder.com/150',
-    ),
-    Ong(
-      nome: 'ONG D',
-      endereco: 'Av Mutinga C, 789 - Guarulhos',
-      imagem: 'https://via.placeholder.com/150',
-    ),
-    Ong(
-      nome: 'ONG E',
-      endereco: 'Av Prof Costa, 789 - Carapicuiba',
-      imagem: 'https://via.placeholder.com/150',
-    ),
-    // Adicione mais ONGs conforme necessário
-  ];
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  List<ONG> ongs = [];
+  List<ONG> ongsFiltradas = [];
 
-  List<Ong> ongsFiltradas = [];
-
+  //-------------------- PROCURAR ONGS NO FIREBASE ---------------------------//
   @override
   void initState() {
     super.initState();
-    // Inicialmente, exibe todas as ONGs
-    ongsFiltradas = List.from(ongs);
+    _carregarDadosFirestore();
+  }
+
+  Future<void> _carregarDadosFirestore() async {
+    try {
+      QuerySnapshot ongsSnapshot = await _firestore.collection('ong').get();
+
+      List<ONG> ongsFromFirestore = ongsSnapshot.docs.map((doc) {
+        Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+
+        // Convertendo a String para DateTime e fornecendo um valor padrão se a conversão falhar
+        DateTime dataCriacao =
+            DateTime.tryParse(data['dataCriacao'] ?? '') ?? DateTime.now();
+
+        return ONG(
+          nome: data['nome'] ?? '',
+          endereco: data['endereco'] ?? '',
+          fotoPerfil: data['fotoPerfil'] ?? '',
+          cnpj: data['cnpj'] ?? '',
+          dataCriacao: dataCriacao,
+          numero: data['numero'] ?? '',
+          complemento: data['complemtento'] ?? '',
+          // Adicione os outros campos da ONG conforme sua estrutura
+        );
+      }).toList();
+
+      setState(() {
+        ongs = ongsFromFirestore;
+        ongsFiltradas = List.from(ongs);
+      });
+    } catch (e) {
+      print('Erro ao carregar dados do Firestore: $e');
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          backgroundColor: Colors.green,
-          title: const Text("DoaConecta"),
-          centerTitle: true,
-          automaticallyImplyLeading: false,
-          leadingWidth: 100.0,
-          actions: [
+        backgroundColor: Colors.green,
+        title: const Text("DoaConecta"),
+        centerTitle: true,
+        automaticallyImplyLeading: false,
+        leadingWidth: 100.0,
+        //------------------- Botão de notificação -----------------------//
+        actions: [
           IconButton(
-            icon: Icon(Icons.notifications), // Ícone de notificação
+            icon: Icon(Icons.notifications),
             onPressed: () {
               Navigator.push(
                 context,
@@ -140,13 +79,13 @@ class _ExplorarDoadorPageState extends State<ExplorarDoadorPage> {
       ),
       body: Column(
         children: [
+          //------------------ Barra de Pesquisa -------------------------------//
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: TextField(
               onChanged: (query) {
                 setState(() {
                   if (query.isEmpty) {
-                    // Se a consulta estiver vazia, exiba todas as ONGs
                     ongsFiltradas = List.from(ongs);
                   } else {
                     ongsFiltradas = ongs
@@ -170,6 +109,7 @@ class _ExplorarDoadorPageState extends State<ExplorarDoadorPage> {
               ),
             ),
           ),
+          //-------------------------- LISTA DE ONGS ----------------------------//
           Expanded(
             child: ListView.builder(
               itemCount: ongsFiltradas.length,
@@ -179,7 +119,11 @@ class _ExplorarDoadorPageState extends State<ExplorarDoadorPage> {
                   child: ListTile(
                     leading: CircleAvatar(
                       backgroundImage:
-                          NetworkImage(ongsFiltradas[index].imagem),
+                          ongsFiltradas[index].fotoPerfil != null &&
+                                  ongsFiltradas[index].fotoPerfil!.isNotEmpty
+                              ? NetworkImage(ongsFiltradas[index].fotoPerfil!)
+                              : AssetImage('caminho/para/imagem_padrao.png')
+                                  as ImageProvider<Object>?,
                     ),
                     title: Text(ongsFiltradas[index].nome),
                     subtitle: Text(ongsFiltradas[index].endereco),
