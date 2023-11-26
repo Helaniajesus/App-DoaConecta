@@ -20,7 +20,7 @@ class SenhaEmailPageOng extends StatelessWidget {
             const SizedBox(height: 20),
             const Text(
               "Coloque seu E-mail que foi cadastrado para o envio da troca de Senha",
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 20),
             Container(

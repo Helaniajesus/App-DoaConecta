@@ -13,6 +13,7 @@ class _ExplorarDoadorPageState extends State<ExplorarDoadorPage> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   List<ONG> ongs = [];
   List<ONG> ongsFiltradas = [];
+  bool isLoading = true; // Adicionando uma variável para controlar o estado de carregamento
 
   //-------------------- PROCURAR ONGS NO FIREBASE ---------------------------//
   @override
@@ -47,9 +48,13 @@ class _ExplorarDoadorPageState extends State<ExplorarDoadorPage> {
       setState(() {
         ongs = ongsFromFirestore;
         ongsFiltradas = List.from(ongs);
+        isLoading = false; // Marcando como concluído o carregamento
       });
     } catch (e) {
       print('Erro ao carregar dados do Firestore: $e');
+       setState(() {
+        isLoading = false; // Em caso de erro, marca como concluído também
+      });
     }
   }
 
@@ -111,7 +116,11 @@ class _ExplorarDoadorPageState extends State<ExplorarDoadorPage> {
           ),
           //-------------------------- LISTA DE ONGS ----------------------------//
           Expanded(
-            child: ListView.builder(
+            child: isLoading
+                ? Center(child: CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
+                  strokeWidth: 3,)) // Indicador de progresso enquanto carrega
+                : ListView.builder(
               itemCount: ongsFiltradas.length,
               itemBuilder: (context, index) {
                 return Card(
