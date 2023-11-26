@@ -9,17 +9,16 @@ import 'package:firebase_auth/firebase_auth.dart';
 class CadastrarOngPage extends StatelessWidget {
   final ONG ong;
 
-   CadastrarOngPage({Key? key, required this.ong});
+  CadastrarOngPage({Key? key, required this.ong});
 
-     // Controladores para os campos de entrada de dados
-    TextEditingController telefoneController = TextEditingController();
-    TextEditingController emailController = TextEditingController();
-    TextEditingController senhaController = TextEditingController();
-    TextEditingController repetirSenhaController = TextEditingController();
+  // Controladores para os campos de entrada de dados
+  TextEditingController telefoneController = TextEditingController();
+  TextEditingController emailController = TextEditingController();
+  TextEditingController senhaController = TextEditingController();
+  TextEditingController repetirSenhaController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
-
     final _formKey = GlobalKey<FormState>();
 
     return Scaffold(
@@ -52,18 +51,15 @@ class CadastrarOngPage extends StatelessWidget {
                 ),
                 const SizedBox(height: 20),
                 // ------------ Campo de entrada para telefone --------------------//
-                
+
                 TextFormField(
                   controller: telefoneController,
-                  inputFormatters:  [maskFormatter],
+                  inputFormatters: [maskFormatter],
                   keyboardType: TextInputType.number,
-                  
                   decoration: const InputDecoration(
                     labelText: "Celular (*)",
                   ),
-
                   validator: validadorTelefone,
-                                
                 ),
                 const SizedBox(height: 10),
                 // ------------ Campo de entrada para o email--------------------//
@@ -95,12 +91,14 @@ class CadastrarOngPage extends StatelessWidget {
                 const SizedBox(height: 20),
                 // ------------ Botão para cadastro --------------------//
                 ElevatedButton(
-                   onPressed: () async {
+                  onPressed: () async {
                     if (_formKey.currentState!.validate()) {
                       ong.telefone = telefoneController.text;
                       ong.email = emailController.text;
                       ong.senha = senhaController.text;
-                      UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+                      UserCredential userCredential = await FirebaseAuth
+                          .instance
+                          .createUserWithEmailAndPassword(
                         email: emailController.text,
                         password: senhaController.text,
                       );
@@ -137,56 +135,53 @@ class CadastrarOngPage extends StatelessWidget {
   //------------------Validação Formulario ---------------------------//
 
 //validação email
-String? validadorEmail(String? value) {
-  if (value == null || value.isEmpty) {
-    return 'Campo obrigatório';
+  String? validadorEmail(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Campo obrigatório';
+    }
+    final emailRegExp =
+        RegExp(r'^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)*(\.[a-z]{2,3})$');
+    if (!emailRegExp.hasMatch(value)) {
+      return 'Email inválido';
+    }
+    return null;
   }
-  final emailRegExp =
-      RegExp(r'^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)*(\.[a-z]{2,3})$');
-  if (!emailRegExp.hasMatch(value)) {
-    return 'Email inválido';
-  }
-  return null;
-}
 
 //validação email
-String? validadorTelefone(String? value) {
-  if (value == null || value.isEmpty) {
-    return 'Campo obrigatório';
+  String? validadorTelefone(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Campo obrigatório';
+    }
+    final TelRegExp = RegExp(r'^\(\d{2}\) \d{5}-\d{4}$');
+    if (!TelRegExp.hasMatch(value)) {
+      return 'Informe um telefone válido';
+    }
+    return null;
   }
-  final TelRegExp =
-      RegExp(r'^\(\d{2}\) \d{5}-\d{4}$');
-  if (!TelRegExp.hasMatch(value)) {
-    return 'Informe um telefone válido';
-  }
-  return null;
-}
 
-var maskFormatter = MaskTextInputFormatter(
-  mask: "(##) #####-####",
-  filter: {"#": RegExp(r'[0-9]')},
-);
-
-//validação email
-String? validadorSenha(String? value) {
-  if (value == null || value.isEmpty) {
-    return 'Campo obrigatório';
-  }else if (value.length < 6) {
-    return 'Senha precisa ter no mínimo 6 caracteres';
-  }
-  return null;
-}
+  var maskFormatter = MaskTextInputFormatter(
+    mask: "(##) #####-####",
+    filter: {"#": RegExp(r'[0-9]')},
+  );
 
 //validação email
-String? validadorConfirmacaoSenha(String? value) {
-  if (value == null || value.isEmpty) {
-    return 'Campo obrigatório';
+  String? validadorSenha(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Campo obrigatório';
+    } else if (value.length < 6) {
+      return 'Senha precisa ter no mínimo 6 caracteres';
+    }
+    return null;
   }
-  if (value != senhaController.text) {
-    return 'As senhas não coincidem';
+
+//validação email
+  String? validadorConfirmacaoSenha(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Campo obrigatório';
+    }
+    if (value != senhaController.text) {
+      return 'As senhas não coincidem';
+    }
+    return null;
   }
-  return null;
 }
-
-}
-

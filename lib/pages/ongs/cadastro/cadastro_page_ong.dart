@@ -16,7 +16,7 @@ class _CadastroPageOngState extends State<CadastroPageOng> {
   TextEditingController nomeOngController = TextEditingController();
   TextEditingController cnpjController = TextEditingController();
   TextEditingController dataCriacaoController = TextEditingController();
- // TextEditingController cepController = TextEditingController();
+  // TextEditingController cepController = TextEditingController();
   TextEditingController enderecoController = TextEditingController();
   TextEditingController numeroController = TextEditingController();
   TextEditingController complementoController = TextEditingController();
@@ -106,7 +106,7 @@ class _CadastroPageOngState extends State<CadastroPageOng> {
                 ),
                 const SizedBox(height: 10),
                 //--------------------- Campo CEP ONG --------------------------------//
-              /*  TextFormField(
+                /*  TextFormField(
                   controller: cepController,
                   decoration: const InputDecoration(
                     labelText: "CEP (*)",
@@ -142,13 +142,13 @@ class _CadastroPageOngState extends State<CadastroPageOng> {
                 const SizedBox(height: 20),
                 //--------------------- Botão proxima página --------------------------------//
                 ElevatedButton(
-                   onPressed: () async {
+                  onPressed: () async {
                     if (_formKey.currentState!.validate()) {
                       ONG ong = ONG(
                         nome: nomeOngController.text,
                         cnpj: cnpjController.text,
                         dataCriacao: dataCriacao ?? DateTime.now(),
-                       // cep: cepController.text,
+                        // cep: cepController.text,
                         endereco: enderecoController.text,
                         numero: numeroController.text,
                         complemento: complementoController.text,

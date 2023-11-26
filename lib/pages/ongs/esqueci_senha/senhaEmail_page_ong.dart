@@ -1,76 +1,58 @@
 import 'package:flutter/material.dart';
-import 'novaSenha_page_ong.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class SenhaEmailPageOng extends StatelessWidget {
-  const SenhaEmailPageOng({Key? key}) : super(key: key);
+  SenhaEmailPageOng({Key? key}) : super(key: key);
+
+  final TextEditingController emailController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
-    AssetImage logoImage = const AssetImage('assets/images/logo_doa_conecta.png');
-
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.green,
-        title: const Text("Recuperação de Senha via E-mail"),
+        title: const Text("Trocar Senha por E-mail"),
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            // Adicionar a imagem do logo
-            Row(
-              children: [
-                Expanded(child: Container()),
-                Expanded(
-                  flex: 8,
-                  child: Image(
-                    image: logoImage,
-                    width: 120,
-                    height: 170,
-                    alignment: Alignment.center,
-                  ),
-                ),
-                Expanded(child: Container()),
-              ],
-            ),
             const SizedBox(height: 20),
             const Text(
-              "Entre com o código",
+              "Coloque seu E-mail que foi cadastrado para o envio da troca de Senha",
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
-            const SizedBox(height: 10),
-            const Text(
-              "Um código foi enviado para o seu E-mail",
-              style: TextStyle(fontSize: 16),
-            ),
             const SizedBox(height: 20),
-            // Inserir 4 quadradinhos onde o usuário digitará a senha de 4 dígitos
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                _buildPinInputField(),
-                _buildPinInputField(),
-                _buildPinInputField(),
-                _buildPinInputField(),
-              ],
+            Container(
+              margin: const EdgeInsets.symmetric(horizontal: 30),
+              child: TextFormField(
+                controller: emailController,
+                decoration: const InputDecoration(
+                  labelText: 'E-mail',
+                  labelStyle: TextStyle(fontSize: 18.0),
+                  border: OutlineInputBorder(),
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Por favor, insira o e-mail';
+                  } else if (!value.contains('@')) {
+                    return 'Por favor, insira um e-mail válido';
+                  }
+                  return null;
+                },
+              ),
             ),
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                // Navegue para a página de nova senha
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const NovaSenhaPageOng(),
-                  ),
-                );
+                _trocarSenhaPorEmail(context, emailController.text);
               },
               style: ButtonStyle(
                 backgroundColor: MaterialStateProperty.all(Colors.green),
                 minimumSize: MaterialStateProperty.all(const Size(200, 50)),
               ),
               child: const Text(
-                "Continuar",
+                "Enviar",
                 style: TextStyle(
                   color: Colors.black,
                   fontSize: 16,
@@ -84,23 +66,56 @@ class SenhaEmailPageOng extends StatelessWidget {
     );
   }
 
-  // Função para construir os campos de entrada de PIN (senha)
-  Widget _buildPinInputField() {
-    return Container(
-      width: 40,
-      height: 40,
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.black, width: 2),
-      ),
-      child: const TextField(
-        textAlign: TextAlign.center,
-        decoration: InputDecoration(
-          border: InputBorder.none,
-          hintText: "0",
-          hintStyle: TextStyle(fontSize: 18),
-        ),
-      ),
+  void _trocarSenhaPorEmail(BuildContext context, String email) async {
+    try {
+      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+      _mostrarDialogoSucesso(context);
+    } on FirebaseAuthException catch (e) {
+      print("Erro ao enviar e-mail de troca de senha: $e");
+      _mostrarDialogoErro(context, e.message ?? "Erro desconhecido");
+    }
+  }
+
+  void _mostrarDialogoSucesso(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("E-mail Enviado"),
+          content: const Text(
+            "Um e-mail com instruções para trocar a senha foi enviado para o endereço informado.",
+          ),
+          actions: [
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                Navigator.of(context).pop(); // Voltar para a página anterior
+              },
+              child: const Text("OK"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _mostrarDialogoErro(BuildContext context, String mensagem) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Erro"),
+          content: Text(mensagem),
+          actions: [
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text("OK"),
+            ),
+          ],
+        );
+      },
     );
   }
 }
