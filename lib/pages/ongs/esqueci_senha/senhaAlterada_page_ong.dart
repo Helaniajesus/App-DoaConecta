@@ -1,4 +1,3 @@
-import 'package:doa_conecta_app/pages/ongs/login_page_ong.dart';
 import 'package:flutter/material.dart';
 
 class SenhaAlteradaPageOng extends StatelessWidget {
@@ -6,8 +5,6 @@ class SenhaAlteradaPageOng extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    AssetImage logoImage = const AssetImage('assets/images/logo_doa_conecta.png');
-
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.green,
@@ -17,49 +14,24 @@ class SenhaAlteradaPageOng extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            // Adicionar a imagem do logo
-            Row(
-              children: [
-                Expanded(child: Container()),
-                Expanded(
-                  flex: 8,
-                  child: Image(
-                    image: logoImage,
-                    width: 120,
-                    height: 170,
-                    alignment: Alignment.center,
-                  ),
-                ),
-                Expanded(child: Container()),
-              ],
-            ),
+            // Adicione a imagem do logo aqui
             const SizedBox(height: 20),
             const Text(
-              "Parabéns!",
+              "Senha Alterada com Sucesso",
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 10),
-            const Text(
-              "Sua senha foi alterada com sucesso",
-              style: TextStyle(fontSize: 16),
             ),
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                // Navegue para a página de login
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const LoginPageOng(),
-                  ),
-                );
+                // Navegue para a próxima tela
+                Navigator.pop(context);
               },
               style: ButtonStyle(
                 backgroundColor: MaterialStateProperty.all(Colors.green),
                 minimumSize: MaterialStateProperty.all(const Size(200, 50)),
               ),
               child: const Text(
-                "Entrar",
+                "OK",
                 style: TextStyle(
                   color: Colors.black,
                   fontSize: 16,

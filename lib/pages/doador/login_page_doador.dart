@@ -1,7 +1,6 @@
 import 'package:doa_conecta_app/pages/doador/cadastro/cadastro_page_doador.dart';
 import 'package:doa_conecta_app/pages/doador/main_page_doador.dart';
-import 'package:doa_conecta_app/pages/ongs/esqueci_senha/esqueciSenha_page_ong.dart';
-
+import 'package:doa_conecta_app/pages/ongs/esqueci_senha/senhaEmail_page_ong.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -224,7 +223,7 @@ class _LoginPageDoadorState extends State<LoginPageDoador> {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => EsqueciSenhaPageOng()));
+                              builder: (context) => SenhaEmailPageOng()));
                     },
                     child: const Text(
                       "Esqueci minha senha",

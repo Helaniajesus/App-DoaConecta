@@ -151,7 +151,8 @@ class _CadastroPageDoadorState extends State<CadastroPageDoador> {
                       await Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => CadastrarDoadorPage(doador: usuario),
+                          builder: (context) =>
+                              CadastrarDoadorPage(doador: usuario),
                         ),
                       );
                     }

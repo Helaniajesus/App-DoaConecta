@@ -1,27 +1,30 @@
+import 'package:flutter/material.dart';
+import 'cadRealizado_page_ong.dart';
+import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:doa_conecta_app/ong.dart';
 import 'package:doa_conecta_app/pages/ongs/firebase_ong/ong_firebase.dart';
-import 'package:flutter/material.dart';
-import 'cadRealizado_page_ong.dart'; // Importe a página inicial aqui
-import 'package:flutter/services.dart';
-import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-class CadastrarOngPage extends StatelessWidget {
+class CadastrarOngPage extends StatefulWidget {
   final ONG ong;
 
-   CadastrarOngPage({Key? key, required this.ong});
+  CadastrarOngPage({Key? key, required this.ong}) : super(key: key);
 
-     // Controladores para os campos de entrada de dados
-    TextEditingController telefoneController = TextEditingController();
-    TextEditingController emailController = TextEditingController();
-    TextEditingController senhaController = TextEditingController();
-    TextEditingController repetirSenhaController = TextEditingController();
+  @override
+  _CadastrarOngPageState createState() => _CadastrarOngPageState();
+}
+
+class _CadastrarOngPageState extends State<CadastrarOngPage> {
+  TextEditingController telefoneController = TextEditingController();
+  TextEditingController emailController = TextEditingController();
+  TextEditingController senhaController = TextEditingController();
+  TextEditingController repetirSenhaController = TextEditingController();
+
+  final _formKey = GlobalKey<FormState>();
+  bool isSenhaVisivel = false;
 
   @override
   Widget build(BuildContext context) {
-
-    final _formKey = GlobalKey<FormState>();
-
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.green,
@@ -34,7 +37,6 @@ class CadastrarOngPage extends StatelessWidget {
             key: _formKey,
             child: Column(
               children: [
-                // Título da página
                 const Text(
                   "Login e Contato",
                   style: TextStyle(
@@ -43,7 +45,6 @@ class CadastrarOngPage extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 10),
-                // Instruções sobre campos obrigatórios
                 const Text(
                   "Preencha os campos obrigatórios (*)",
                   style: TextStyle(
@@ -51,22 +52,16 @@ class CadastrarOngPage extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 20),
-                // ------------ Campo de entrada para telefone --------------------//
-                
                 TextFormField(
                   controller: telefoneController,
-                  inputFormatters:  [maskFormatter],
+                  inputFormatters: [maskFormatter],
                   keyboardType: TextInputType.number,
-                  
                   decoration: const InputDecoration(
                     labelText: "Celular (*)",
                   ),
-
                   validator: validadorTelefone,
-                                
                 ),
                 const SizedBox(height: 10),
-                // ------------ Campo de entrada para o email--------------------//
                 TextFormField(
                   controller: emailController,
                   decoration: const InputDecoration(
@@ -75,38 +70,60 @@ class CadastrarOngPage extends StatelessWidget {
                   validator: validadorEmail,
                 ),
                 const SizedBox(height: 10),
-                // ------------ Campo de entrada para o senha --------------------//
                 TextFormField(
                   controller: senhaController,
-                  decoration: const InputDecoration(
+                  obscureText: !isSenhaVisivel,
+                  decoration: InputDecoration(
                     labelText: "Senha (*)",
+                    suffixIcon: GestureDetector(
+                      onTap: () {
+                        _toggleSenhaVisivel();
+                      },
+                      child: Icon(
+                        isSenhaVisivel
+                            ? Icons.visibility
+                            : Icons.visibility_off,
+                        color: Colors.grey,
+                      ),
+                    ),
                   ),
                   validator: validadorSenha,
                 ),
                 const SizedBox(height: 10),
-                // ------------ Campo de entrada para repetir senha --------------------//
                 TextFormField(
                   controller: repetirSenhaController,
-                  decoration: const InputDecoration(
+                  obscureText: !isSenhaVisivel,
+                  decoration: InputDecoration(
                     labelText: "Repetir Senha (*)",
+                    suffixIcon: GestureDetector(
+                      onTap: () {
+                        _toggleSenhaVisivel();
+                      },
+                      child: Icon(
+                        isSenhaVisivel
+                            ? Icons.visibility
+                            : Icons.visibility_off,
+                        color: Colors.grey,
+                      ),
+                    ),
                   ),
                   validator: validadorConfirmacaoSenha,
                 ),
                 const SizedBox(height: 20),
-                // ------------ Botão para cadastro --------------------//
                 ElevatedButton(
-                   onPressed: () async {
+                  onPressed: () async {
                     if (_formKey.currentState!.validate()) {
-                      ong.telefone = telefoneController.text;
-                      ong.email = emailController.text;
-                      ong.senha = senhaController.text;
-                  
-                      UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+                      widget.ong.telefone = telefoneController.text;
+                      widget.ong.email = emailController.text;
+                      widget.ong.senha = senhaController.text;
+                      UserCredential userCredential = await FirebaseAuth
+                          .instance
+                          .createUserWithEmailAndPassword(
                         email: emailController.text,
                         password: senhaController.text,
                       );
                       String uid = userCredential.user!.uid;
-                      await salvarDadosNoFirebaseOng(ong, uid);
+                      await salvarDadosNoFirebaseOng(widget.ong, uid);
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
@@ -135,59 +152,57 @@ class CadastrarOngPage extends StatelessWidget {
       ),
     );
   }
-  //------------------Validação Formulario ---------------------------//
 
-//validação email
-String? validadorEmail(String? value) {
-  if (value == null || value.isEmpty) {
-    return 'Campo obrigatório';
+  String? validadorEmail(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Campo obrigatório';
+    }
+    final emailRegExp =
+        RegExp(r'^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)*(\.[a-z]{2,3})$');
+    if (!emailRegExp.hasMatch(value)) {
+      return 'Email inválido';
+    }
+    return null;
   }
-  final emailRegExp =
-      RegExp(r'^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)*(\.[a-z]{2,3})$');
-  if (!emailRegExp.hasMatch(value)) {
-    return 'Email inválido';
+
+  String? validadorTelefone(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Campo obrigatório';
+    }
+    final TelRegExp = RegExp(r'^\(\d{2}\) \d{5}-\d{4}$');
+    if (!TelRegExp.hasMatch(value)) {
+      return 'Informe um telefone válido';
+    }
+    return null;
   }
-  return null;
+
+  var maskFormatter = MaskTextInputFormatter(
+    mask: "(##) #####-####",
+    filter: {"#": RegExp(r'[0-9]')},
+  );
+
+  String? validadorSenha(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Campo obrigatório';
+    } else if (value.length < 6) {
+      return 'Senha precisa ter no mínimo 6 caracteres';
+    }
+    return null;
+  }
+
+  String? validadorConfirmacaoSenha(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Campo obrigatório';
+    }
+    if (value != senhaController.text) {
+      return 'As senhas não coincidem';
+    }
+    return null;
+  }
+
+  void _toggleSenhaVisivel() {
+    setState(() {
+      isSenhaVisivel = !isSenhaVisivel;
+    });
+  }
 }
-
-//validação email
-String? validadorTelefone(String? value) {
-  if (value == null || value.isEmpty) {
-    return 'Campo obrigatório';
-  }
-  final TelRegExp =
-      RegExp(r'^\(\d{2}\) \d{5}-\d{4}$');
-  if (!TelRegExp.hasMatch(value)) {
-    return 'Informe um telefone válido';
-  }
-  return null;
-}
-
-var maskFormatter = MaskTextInputFormatter(
-  mask: "(##) #####-####",
-  filter: {"#": RegExp(r'[0-9]')},
-);
-
-//validação email
-String? validadorSenha(String? value) {
-  if (value == null || value.isEmpty) {
-    return 'Campo obrigatório';
-  }else if (value.length < 6) {
-    return 'Senha precisa ter no mínimo 6 caracteres';
-  }
-  return null;
-}
-
-//validação email
-String? validadorConfirmacaoSenha(String? value) {
-  if (value == null || value.isEmpty) {
-    return 'Campo obrigatório';
-  }
-  if (value != senhaController.text) {
-    return 'As senhas não coincidem';
-  }
-  return null;
-}
-
-}
-
