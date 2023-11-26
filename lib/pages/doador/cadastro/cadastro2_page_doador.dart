@@ -1,27 +1,31 @@
 import 'package:flutter/material.dart';
-import 'cadRealizado_page_doador.dart'; 
+import 'cadRealizado_page_doador.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:doa_conecta_app/doador.dart';
 import 'package:doa_conecta_app/pages/doador/firebase/doador_firebase.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-
-class CadastrarDoadorPage extends StatelessWidget {
+class CadastrarDoadorPage extends StatefulWidget {
   final Doador doador;
 
-  CadastrarDoadorPage({Key? key, required this.doador});
+  CadastrarDoadorPage({Key? key, required this.doador}) : super(key: key);
 
-  // Controladores para os campos de entrada de dados
+  @override
+  _CadastrarDoadorPageState createState() => _CadastrarDoadorPageState();
+}
+
+class _CadastrarDoadorPageState extends State<CadastrarDoadorPage> {
   TextEditingController telefoneController = TextEditingController();
   TextEditingController emailController = TextEditingController();
   TextEditingController senhaController = TextEditingController();
   TextEditingController repetirSenhaController = TextEditingController();
 
+  final _formKey = GlobalKey<FormState>();
+  bool isSenhaVisivel = false;
+
   @override
   Widget build(BuildContext context) {
-    final _formKey = GlobalKey<FormState>();
-
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.green,
@@ -34,7 +38,6 @@ class CadastrarDoadorPage extends StatelessWidget {
             key: _formKey,
             child: Column(
               children: [
-                // Título da página
                 const Text(
                   "Login e Contato",
                   style: TextStyle(
@@ -43,7 +46,6 @@ class CadastrarDoadorPage extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 10),
-                // Instruções sobre campos obrigatórios
                 const Text(
                   "Preencha os campos obrigatórios (*)",
                   style: TextStyle(
@@ -51,8 +53,6 @@ class CadastrarDoadorPage extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 20),
-                // ------------ Campo de entrada para telefone --------------------//
-
                 TextFormField(
                   controller: telefoneController,
                   inputFormatters: [maskFormatter],
@@ -63,7 +63,6 @@ class CadastrarDoadorPage extends StatelessWidget {
                   validator: validadorTelefone,
                 ),
                 const SizedBox(height: 10),
-                // ------------ Campo de entrada para o email--------------------//
                 TextFormField(
                   controller: emailController,
                   decoration: const InputDecoration(
@@ -72,37 +71,60 @@ class CadastrarDoadorPage extends StatelessWidget {
                   validator: validadorEmail,
                 ),
                 const SizedBox(height: 10),
-                // ------------ Campo de entrada para o senha --------------------//
                 TextFormField(
                   controller: senhaController,
-                  decoration: const InputDecoration(
+                  obscureText: !isSenhaVisivel,
+                  decoration: InputDecoration(
                     labelText: "Senha (*)",
+                    suffixIcon: GestureDetector(
+                      onTap: () {
+                        _toggleSenhaVisivel();
+                      },
+                      child: Icon(
+                        isSenhaVisivel
+                            ? Icons.visibility
+                            : Icons.visibility_off,
+                        color: Colors.grey,
+                      ),
+                    ),
                   ),
                   validator: validadorSenha,
                 ),
                 const SizedBox(height: 10),
-                // ------------ Campo de entrada para repetir senha --------------------//
                 TextFormField(
                   controller: repetirSenhaController,
-                  decoration: const InputDecoration(
+                  obscureText: !isSenhaVisivel,
+                  decoration: InputDecoration(
                     labelText: "Repetir Senha (*)",
+                    suffixIcon: GestureDetector(
+                      onTap: () {
+                        _toggleSenhaVisivel();
+                      },
+                      child: Icon(
+                        isSenhaVisivel
+                            ? Icons.visibility
+                            : Icons.visibility_off,
+                        color: Colors.grey,
+                      ),
+                    ),
                   ),
                   validator: validadorConfirmacaoSenha,
                 ),
                 const SizedBox(height: 20),
-                // ------------ Botão para cadastro --------------------//
                 ElevatedButton(
                   onPressed: () async {
                     if (_formKey.currentState!.validate()) {
-                      doador.telefone = telefoneController.text;
-                      doador.email = emailController.text;
-                      doador.senha = senhaController.text;
-                      UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+                      widget.doador.telefone = telefoneController.text;
+                      widget.doador.email = emailController.text;
+                      widget.doador.senha = senhaController.text;
+                      UserCredential userCredential = await FirebaseAuth
+                          .instance
+                          .createUserWithEmailAndPassword(
                         email: emailController.text,
                         password: senhaController.text,
                       );
                       String uid = userCredential.user!.uid;
-                      await salvarDadosNoFirebase(doador, uid);
+                      await salvarDadosNoFirebase(widget.doador, uid);
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
@@ -131,9 +153,7 @@ class CadastrarDoadorPage extends StatelessWidget {
       ),
     );
   }
-  //------------------Validação Formulario ---------------------------//
 
-//validação email
   String? validadorEmail(String? value) {
     if (value == null || value.isEmpty) {
       return 'Campo obrigatório';
@@ -146,7 +166,6 @@ class CadastrarDoadorPage extends StatelessWidget {
     return null;
   }
 
-//validação telefone
   String? validadorTelefone(String? value) {
     if (value == null || value.isEmpty) {
       return 'Campo obrigatório';
@@ -163,18 +182,15 @@ class CadastrarDoadorPage extends StatelessWidget {
     filter: {"#": RegExp(r'[0-9]')},
   );
 
-//validação senha
   String? validadorSenha(String? value) {
-  if (value == null || value.isEmpty) {
-    return 'Campo obrigatório';
-  } else if (value.length < 6) {
-    return 'Senha precisa ter no mínimo 6 caracteres';
+    if (value == null || value.isEmpty) {
+      return 'Campo obrigatório';
+    } else if (value.length < 6) {
+      return 'Senha precisa ter no mínimo 6 caracteres';
+    }
+    return null;
   }
-  return null;
-}
 
-
-//validação confirmar senha
   String? validadorConfirmacaoSenha(String? value) {
     if (value == null || value.isEmpty) {
       return 'Campo obrigatório';
@@ -183,5 +199,11 @@ class CadastrarDoadorPage extends StatelessWidget {
       return 'As senhas não coincidem';
     }
     return null;
+  }
+
+  void _toggleSenhaVisivel() {
+    setState(() {
+      isSenhaVisivel = !isSenhaVisivel;
+    });
   }
 }

@@ -1,4 +1,5 @@
 //-------------CLASSE DOACAO-----------------------//
+// ignore: unused_import
 import 'dart:io';
 
 class Donation {
@@ -21,7 +22,7 @@ class Donation {
     required this.qualidade,
     required this.tamanho,
     required this.enderecoRetirada,
-     required this.fotosURLs,
+    required this.fotosURLs,
     required this.dataPublicacao,
     required this.status,
     required this.idONG,
