@@ -40,7 +40,7 @@ class _MainPageOngState extends State<MainPageOng> {
                     posicaoPagina = value;
                   });
                 },
-                children: const [
+                children:  [
                   ExplorarOngPage(),
                   DoacaoOngPage(),
                   ContatoPage(),

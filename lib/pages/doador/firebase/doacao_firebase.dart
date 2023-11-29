@@ -47,3 +47,29 @@ Future<void> apagarDoacaoNoFirebase(id) async {
     print('Erro ao apagar documentos: $e');
   }
 }
+
+Future<void> adicionarDestinatario(String idDaDoacao, String idOng) async {
+  try {
+    await FirebaseFirestore.instance
+        .collection('doacao')
+        .doc(idDaDoacao)
+        .update({'ong': idOng});
+    print('Status da doação alterado para falso com sucesso!');
+  } catch (e) {
+    print('Erro ao alterar o status da doação: $e');
+  }
+}
+
+Future<void> marcarDoacaoComoRecolhida(String idDoacao) async {
+  try {
+    await FirebaseFirestore.instance
+        .collection('doacao')
+        .doc(idDoacao)
+        .update({'status': true}); // Atualize o status da doação para "recolhida"
+    
+    print('Doação marcada como recolhida com sucesso!');
+  } catch (error) {
+    print('Erro ao marcar a doação como recolhida: $error');
+    // Tratar o erro conforme necessário
+  }
+}

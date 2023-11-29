@@ -1,9 +1,9 @@
 import 'package:doa_conecta_app/pages/ongs/cadastro/cadastro_page_ong.dart';
-import 'package:doa_conecta_app/pages/ongs/esqueci_senha/senhaEmail_page_ong.dart';
+import 'package:doa_conecta_app/pages/esqueci_senha/senhaEmail_page_ong.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:doa_conecta_app/pages/ongs/main_page_ong.dart';
-import 'package:doa_conecta_app/pages/ongs/esqueci_senha/senha_email_page_ong.dart';
+import 'package:doa_conecta_app/pages/esqueci_senha/senha_email_page_ong.dart';
 
 class LoginPageOng extends StatefulWidget {
   const LoginPageOng({Key? key}) : super(key: key);
@@ -14,8 +14,8 @@ class LoginPageOng extends StatefulWidget {
 
 class _LoginPageOngState extends State<LoginPageOng> {
 
-  var emailController = TextEditingController(text: "ong.teste@gmail.com");
-  var senhaController = TextEditingController(text: "123456");
+  var emailController = TextEditingController(text: "teste.perfil@gmail.com");
+  var senhaController = TextEditingController(text: "1111111");
 
   bool isObscureText = true;
 

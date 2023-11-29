@@ -1,13 +1,13 @@
 import 'package:doa_conecta_app/doacao.dart';
-import 'package:doa_conecta_app/pages/doador/firebase/doacao_firebase.dart';
+import 'package:doa_conecta_app/pages/ongs/doacao/recolher_doacao.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class DonationDetails extends StatelessWidget {
+class DonationDetailsExplorarOng extends StatelessWidget {
   final Donation donation;
 
-  DonationDetails({required this.donation});
+  DonationDetailsExplorarOng({required this.donation});
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +38,7 @@ class DonationDetails extends StatelessWidget {
                     ),
                   );
                 }
-
+    
                 if (donation.idONG.isEmpty ||
                     !snapshot.hasData ||
                     snapshot.data == null) {
@@ -126,23 +126,27 @@ class DonationDetails extends StatelessWidget {
                 )
               : Text('Nenhuma foto disponível'),
         ),
-        SizedBox(),
-
-        //------------------------ botão de exclusão caso doação estiver em aberto -------------------------//
-        donation.status == true // Verificando se a doação está aberta
-            ? ElevatedButton(
-                onPressed: () async {
-                  await apagarDoacaoNoFirebase(donation.id);
-                  Navigator.pop(context);
-                },
-                style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all(Colors
-                      .green), // Cor alterada para vermelho para melhor identificação
-                  minimumSize: MaterialStateProperty.all(const Size(200, 50)),
-                ),
-                child: Text('Apagar Doação'),
-              )
-            : SizedBox(), // Se a doação não estiver aberta, não exibe o botão
+        SizedBox(
+          height: 20, // Altura aumentada para 100
+          width: 20,
+        ),
+         //------------------------ botão de recolhimento -------------------------//
+        ElevatedButton(
+          onPressed: () async {
+            Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => RecolherDoacaoPage(donation: donation),
+      ),
+    );
+          },
+          style: ButtonStyle(
+            backgroundColor: MaterialStateProperty.all(Colors
+                .green), // Cor alterada para vermelho para melhor identificação
+            minimumSize: MaterialStateProperty.all(const Size(200, 50)),
+          ),
+          child: Text('Recolher doação'),
+        ),
       ],
     );
   }

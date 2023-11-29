@@ -1,14 +1,16 @@
-import 'package:flutter/material.dart';
-import 'cadRealizado_page_ong.dart';
-import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:doa_conecta_app/ong.dart';
 import 'package:doa_conecta_app/pages/ongs/firebase_ong/ong_firebase.dart';
+import 'package:doa_conecta_app/pages/ongs/firebase_ong/perfil_firebase_ong.dart';
+import 'package:flutter/material.dart';
+import 'cadRealizado_page_ong.dart'; // Importe a página inicial aqui
+import 'package:flutter/services.dart';
+import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class CadastrarOngPage extends StatefulWidget {
   final ONG ong;
 
-  CadastrarOngPage({Key? key, required this.ong}) : super(key: key);
+  const CadastrarOngPage({Key? key, required this.ong}) : super(key: key);
 
   @override
   _CadastrarOngPageState createState() => _CadastrarOngPageState();
@@ -20,11 +22,12 @@ class _CadastrarOngPageState extends State<CadastrarOngPage> {
   TextEditingController senhaController = TextEditingController();
   TextEditingController repetirSenhaController = TextEditingController();
 
-  final _formKey = GlobalKey<FormState>();
-  bool isSenhaVisivel = false;
+  bool isSenhaVisivel = false; // Moveu o estado para o State
 
   @override
   Widget build(BuildContext context) {
+    final _formKey = GlobalKey<FormState>();
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.green,
@@ -37,6 +40,7 @@ class _CadastrarOngPageState extends State<CadastrarOngPage> {
             key: _formKey,
             child: Column(
               children: [
+                // Título da página
                 const Text(
                   "Login e Contato",
                   style: TextStyle(
@@ -45,6 +49,7 @@ class _CadastrarOngPageState extends State<CadastrarOngPage> {
                   ),
                 ),
                 const SizedBox(height: 10),
+                // Instruções sobre campos obrigatórios
                 const Text(
                   "Preencha os campos obrigatórios (*)",
                   style: TextStyle(
@@ -52,6 +57,8 @@ class _CadastrarOngPageState extends State<CadastrarOngPage> {
                   ),
                 ),
                 const SizedBox(height: 20),
+                // ------------ Campo de entrada para telefone --------------------//
+
                 TextFormField(
                   controller: telefoneController,
                   inputFormatters: [maskFormatter],
@@ -62,6 +69,7 @@ class _CadastrarOngPageState extends State<CadastrarOngPage> {
                   validator: validadorTelefone,
                 ),
                 const SizedBox(height: 10),
+                // ------------ Campo de entrada para o email--------------------//
                 TextFormField(
                   controller: emailController,
                   decoration: const InputDecoration(
@@ -70,6 +78,7 @@ class _CadastrarOngPageState extends State<CadastrarOngPage> {
                   validator: validadorEmail,
                 ),
                 const SizedBox(height: 10),
+                // ------------ Campo de entrada para o senha --------------------//
                 TextFormField(
                   controller: senhaController,
                   obscureText: !isSenhaVisivel,
@@ -89,7 +98,17 @@ class _CadastrarOngPageState extends State<CadastrarOngPage> {
                   ),
                   validator: validadorSenha,
                 ),
+
+                /*TextFormField(
+                  controller: senhaController,
+                  decoration: const InputDecoration(
+                    labelText: "Senha (*)",
+                  ),
+                  validator: validadorSenha,
+                ),*/
                 const SizedBox(height: 10),
+                // ------------ Campo de entrada para repetir senha --------------------//
+
                 TextFormField(
                   controller: repetirSenhaController,
                   obscureText: !isSenhaVisivel,
@@ -109,21 +128,35 @@ class _CadastrarOngPageState extends State<CadastrarOngPage> {
                   ),
                   validator: validadorConfirmacaoSenha,
                 ),
+
+                /*TextFormField(
+                  controller: repetirSenhaController,
+                  decoration: const InputDecoration(
+                    labelText: "Repetir Senha (*)",
+                  ),
+                  validator: validadorConfirmacaoSenha,
+                ),*/
                 const SizedBox(height: 20),
+                // ------------ Botão para cadastro --------------------//
                 ElevatedButton(
                   onPressed: () async {
                     if (_formKey.currentState!.validate()) {
                       widget.ong.telefone = telefoneController.text;
                       widget.ong.email = emailController.text;
                       widget.ong.senha = senhaController.text;
+
                       UserCredential userCredential = await FirebaseAuth
                           .instance
                           .createUserWithEmailAndPassword(
                         email: emailController.text,
                         password: senhaController.text,
                       );
+
                       String uid = userCredential.user!.uid;
                       await salvarDadosNoFirebaseOng(widget.ong, uid);
+
+                      await salvarDadosPerfilNoFirebaseOng(uid);
+
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
@@ -152,7 +185,9 @@ class _CadastrarOngPageState extends State<CadastrarOngPage> {
       ),
     );
   }
+  //------------------Validação Formulario ---------------------------//
 
+//validação email
   String? validadorEmail(String? value) {
     if (value == null || value.isEmpty) {
       return 'Campo obrigatório';
@@ -165,6 +200,7 @@ class _CadastrarOngPageState extends State<CadastrarOngPage> {
     return null;
   }
 
+//validação email
   String? validadorTelefone(String? value) {
     if (value == null || value.isEmpty) {
       return 'Campo obrigatório';
@@ -181,6 +217,7 @@ class _CadastrarOngPageState extends State<CadastrarOngPage> {
     filter: {"#": RegExp(r'[0-9]')},
   );
 
+//validação email
   String? validadorSenha(String? value) {
     if (value == null || value.isEmpty) {
       return 'Campo obrigatório';
@@ -190,6 +227,7 @@ class _CadastrarOngPageState extends State<CadastrarOngPage> {
     return null;
   }
 
+//validação email
   String? validadorConfirmacaoSenha(String? value) {
     if (value == null || value.isEmpty) {
       return 'Campo obrigatório';

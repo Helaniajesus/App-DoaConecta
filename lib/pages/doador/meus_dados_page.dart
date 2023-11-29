@@ -36,7 +36,16 @@ class _ProfilePageState extends State<ProfilePage> {
         stream: _userDataStream,
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
-            return const CircularProgressIndicator();
+            return Center(
+                    child: Container(
+                      width: 50, // Defina a largura desejada
+                      height: 50, // Defina a altura desejada
+                      child: CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
+                        strokeWidth: 3,
+                      ),
+                    ),
+                  );
           }
 
           var userData = snapshot.data!.data();

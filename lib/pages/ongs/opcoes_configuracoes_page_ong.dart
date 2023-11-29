@@ -1,4 +1,5 @@
 import 'package:doa_conecta_app/pages/ongs/configuracoes_app_page_ong.dart';
+import 'package:doa_conecta_app/pages/ongs/meus_dados_page_ong.dart';
 import 'package:flutter/material.dart';
 
 class ConfiguracoesOng extends StatelessWidget {
@@ -18,7 +19,10 @@ class ConfiguracoesOng extends StatelessWidget {
             title: 'Meus Dados',
             icon: Icons.person,
             onPressed: () {
-              // Navegar para a página de Meus Dados
+               Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const MeusDadosPageOng()));
             },
           ),
           Divider(),

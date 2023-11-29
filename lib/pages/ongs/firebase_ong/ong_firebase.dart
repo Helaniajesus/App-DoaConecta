@@ -6,7 +6,7 @@ Future<void> salvarDadosNoFirebaseOng(ONG ong, String uid) async {
   try {
     await FirebaseFirestore.instance.collection('ong').doc(uid).set({
       'nome': ong.nome,
-      'cpf': ong.cnpj,
+      'cnpj': ong.cnpj,
       'dataCriacao': DateFormat('yyyy-MM-dd').format(ong.dataCriacao),
      // 'cep':ong.cep,
       'endereco': ong.endereco,

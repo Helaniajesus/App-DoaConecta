@@ -1,4 +1,10 @@
+import 'package:doa_conecta_app/doacao.dart';
+import 'package:doa_conecta_app/pages/ongs/doacao/detalhes_doacao_ong.dart';
+import 'package:doa_conecta_app/pages/ongs/doacao/detalhes_doacao_recolhida.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:intl/intl.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class DoacaoOngPage extends StatefulWidget {
   const DoacaoOngPage({Key? key}) : super(key: key);
@@ -6,28 +12,81 @@ class DoacaoOngPage extends StatefulWidget {
   @override
   State<DoacaoOngPage> createState() => _DoacaoONGPageState();
 }
-//-------------CLASSE DOACAO-----------------------//
-class Donation {
-  final String title;
-  final String status;
-  final String date;
-  final String imageUrl;
-
-  Donation(this.title, this.status, this.date, this.imageUrl);
-}
 
 class _DoacaoONGPageState extends State<DoacaoOngPage> {
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  //----------- CRIAR DOACOES ----------------------//
-  final List<Donation> openDonations = [
-    Donation('Doação Aberta 1', 'Aberta', '01/03/2023', 'url_da_imagem_1'),
-    Donation('Doação Aberta 2', 'Aberta', '31/05/2023', 'url_da_imagem_2'),
-  ];
+  late User? _user; // Usuário logado
 
-  final List<Donation> closedDonations = [
-    Donation('Doação Fechada 1', 'Fechada', '10/09/2023', 'url_da_imagem_3'),
-    Donation('Doação Fechada 2', 'Fechada', '1/02/2023', 'url_da_imagem_4'),
-  ];
+  // Listas para armazenar as doações
+  List<Donation> openDonations = [];
+  List<Donation> closedDonations = [];
+
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _user = _auth.currentUser; // Obter usuário logado ao inicializar a página
+    if (_user != null) {
+      // Se o usuário estiver logado, chame a função para carregar as doações da ONG
+      _carregarDoacoesDaOng(_user!.uid);
+    }
+  }
+
+  // Função para carregar as doações da ONG atualmente logada
+  Future<void> _carregarDoacoesDaOng(String ongId) async {
+    try {
+      QuerySnapshot doacoesSnapshot = await _firestore
+          .collection('doacao')
+          .where('ong', isEqualTo: ongId) // Filtrar pelo ID da ONG
+          .get();
+
+      doacoesSnapshot.docs.forEach((doc) {
+        final data = doc.data() as Map<String, dynamic>;
+
+        Donation donation = Donation(
+          id: doc.id,
+          categoria: data['categoria'],
+          nomeProduto: data['nomeProduto'],
+          descricao: data['descricao'],
+          qualidade: data['qualidade'],
+          tamanho: data['tamanho'],
+          enderecoRetirada: data['enderecoRetirada'],
+          fotosURLs: List<String>.from(data['fotosURLs'] ?? []),
+          dataPublicacao: data['dataPublicacao'] != null &&
+                  data['dataPublicacao'] is Timestamp
+              ? (data['dataPublicacao'] as Timestamp).toDate()
+              : DateTime.now(),
+          status: data['status'],
+          idONG: data['ong'],
+          idDoador: data['doador'],
+        );
+
+        if (data['status']) {
+          setState(() {
+            openDonations.add(donation); // Adiciona à lista de doações abertas
+          });
+        } else {
+          setState(() {
+            closedDonations
+                .add(donation); // Adiciona à lista de doações fechadas
+          });
+        }
+      });
+
+// Atualizar o estado com as doações carregadas
+      setState(() {
+        isLoading = false;
+      });
+    } catch (e) {
+      print('Erro ao carregar doações da ONG: $e');
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
 
   bool showOpenDonations = true;
 
@@ -84,33 +143,60 @@ class _DoacaoONGPageState extends State<DoacaoOngPage> {
             ],
           ),
           //------------- LISTA DE DOACOES --------------------------//
-          Expanded(
-            child: ListView.builder(
-              itemCount: showOpenDonations
-                  ? openDonations.length
-                  : closedDonations.length,
+Expanded(
+  child: isLoading
+      ? Center(
+          child: CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
+            strokeWidth: 3,
+          ),
+        )
+      : (showOpenDonations ? openDonations.isEmpty : closedDonations.isEmpty)
+          ? Center(
+              child: Text('Sem doações encontradas'),
+            )
+          : ListView.builder(
+              itemCount: showOpenDonations ? openDonations.length : closedDonations.length,
               itemBuilder: (context, index) {
-                final donation = showOpenDonations
-                    ? openDonations[index]
-                    : closedDonations[index];
+                final donation = showOpenDonations ? openDonations[index] : closedDonations[index];
                 return InkWell(
                   onTap: () {
-                    // Ação a ser executada quando o card for pressionado
+                    if (showOpenDonations) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              DonationDetailsOng(donation: donation),
+                        ),
+                      );
+                    } else {
+                      if (donation.status == false) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                RecolhidaDonationDetailsOng(donation: donation),
+                          ),
+                        );
+                      }
+                    }
                   },
                   child: Padding(
                     padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
                     child: Card(
                       color: const Color.fromARGB(223, 255, 255, 255),
                       margin: const EdgeInsets.all(8),
-                      child: Padding(
-                        padding: const EdgeInsets.all(10), // Espaçamento interno dentro do card
-                        child: ListTile(
-                          leading: CircleAvatar(
-                            backgroundImage: NetworkImage(donation.imageUrl),
-                          ),
-                          title: Text(donation.title),
-                          subtitle: Text('Data: ${donation.date}'),
+                      child: ListTile(
+                        leading: CircleAvatar(
+                          backgroundImage: donation.fotosURLs.isNotEmpty
+                              ? NetworkImage(donation.fotosURLs[0])
+                              : AssetImage(
+                                      'caminho_para_imagem_padrao')
+                                  as ImageProvider<Object>?,
                         ),
+                        title: Text(donation.nomeProduto),
+                        subtitle: Text(
+                            'Data: ${DateFormat('dd/MM/yyyy').format(donation.dataPublicacao)}'),
                       ),
                     ),
                   ),
@@ -120,6 +206,6 @@ class _DoacaoONGPageState extends State<DoacaoOngPage> {
           ),
         ],
       ),
-    );
+    );      
   }
 }
