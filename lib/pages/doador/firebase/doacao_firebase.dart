@@ -60,12 +60,24 @@ Future<void> adicionarDestinatario(String idDaDoacao, String idOng) async {
   }
 }
 
+Future<void> removerDestinatario(String idDaDoacao) async {
+  try {
+    await FirebaseFirestore.instance
+        .collection('doacao')
+        .doc(idDaDoacao)
+        .update({'ong': ''});
+    print('Status da doação alterado para falso com sucesso!');
+  } catch (e) {
+    print('Erro ao alterar o status da doação: $e');
+  }
+}
+
 Future<void> marcarDoacaoComoRecolhida(String idDoacao) async {
   try {
     await FirebaseFirestore.instance
         .collection('doacao')
         .doc(idDoacao)
-        .update({'status': true}); // Atualize o status da doação para "recolhida"
+        .update({'status': false}); // Atualize o status da doação para "recolhida"
     
     print('Doação marcada como recolhida com sucesso!');
   } catch (error) {
@@ -73,3 +85,4 @@ Future<void> marcarDoacaoComoRecolhida(String idDoacao) async {
     // Tratar o erro conforme necessário
   }
 }
+

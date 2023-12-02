@@ -24,24 +24,28 @@ class _DoacaoONGPageState extends State<DoacaoOngPage> {
   List<Donation> closedDonations = [];
 
   bool isLoading = true;
+  bool showOpenDonations = true; // Adicionando a variável showOpenDonations
 
   @override
   void initState() {
     super.initState();
     _user = _auth.currentUser; // Obter usuário logado ao inicializar a página
     if (_user != null) {
-      // Se o usuário estiver logado, chame a função para carregar as doações da ONG
-      _carregarDoacoesDaOng(_user!.uid);
+      _carregarDoacoesDaOng(_user!.uid); // Carregar doações da ONG
     }
   }
 
-  // Função para carregar as doações da ONG atualmente logada
   Future<void> _carregarDoacoesDaOng(String ongId) async {
     try {
       QuerySnapshot doacoesSnapshot = await _firestore
           .collection('doacao')
           .where('ong', isEqualTo: ongId) // Filtrar pelo ID da ONG
           .get();
+
+      setState(() {
+        openDonations.clear();
+        closedDonations.clear();
+      });
 
       doacoesSnapshot.docs.forEach((doc) {
         final data = doc.data() as Map<String, dynamic>;
@@ -70,13 +74,11 @@ class _DoacaoONGPageState extends State<DoacaoOngPage> {
           });
         } else {
           setState(() {
-            closedDonations
-                .add(donation); // Adiciona à lista de doações fechadas
+            closedDonations.add(donation); // Adiciona à lista de doações fechadas
           });
         }
       });
 
-// Atualizar o estado com as doações carregadas
       setState(() {
         isLoading = false;
       });
@@ -88,7 +90,12 @@ class _DoacaoONGPageState extends State<DoacaoOngPage> {
     }
   }
 
-  bool showOpenDonations = true;
+  Future<void> atualizarDoacoes() async {
+    setState(() {
+      isLoading = true;
+    });
+    await _carregarDoacoesDaOng(_user!.uid);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -104,7 +111,6 @@ class _DoacaoONGPageState extends State<DoacaoOngPage> {
         children: [
           Row(
             children: [
-              //------------- BOTAO DOAÇOES ABERTAS----------------//
               Expanded(
                 child: GestureDetector(
                   onTap: () {
@@ -122,7 +128,6 @@ class _DoacaoONGPageState extends State<DoacaoOngPage> {
                   ),
                 ),
               ),
-              //---------------- BOTAO DOACOES FECHADAS -------------------//
               Expanded(
                 child: GestureDetector(
                   onTap: () {
@@ -142,70 +147,71 @@ class _DoacaoONGPageState extends State<DoacaoOngPage> {
               ),
             ],
           ),
-          //------------- LISTA DE DOACOES --------------------------//
-Expanded(
-  child: isLoading
-      ? Center(
-          child: CircularProgressIndicator(
-            valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
-            strokeWidth: 3,
-          ),
-        )
-      : (showOpenDonations ? openDonations.isEmpty : closedDonations.isEmpty)
-          ? Center(
-              child: Text('Sem doações encontradas'),
-            )
-          : ListView.builder(
-              itemCount: showOpenDonations ? openDonations.length : closedDonations.length,
-              itemBuilder: (context, index) {
-                final donation = showOpenDonations ? openDonations[index] : closedDonations[index];
-                return InkWell(
-                  onTap: () {
-                    if (showOpenDonations) {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              DonationDetailsOng(donation: donation),
-                        ),
-                      );
-                    } else {
-                      if (donation.status == false) {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                RecolhidaDonationDetailsOng(donation: donation),
-                          ),
-                        );
-                      }
-                    }
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
-                    child: Card(
-                      color: const Color.fromARGB(223, 255, 255, 255),
-                      margin: const EdgeInsets.all(8),
-                      child: ListTile(
-                        leading: CircleAvatar(
-                          backgroundImage: donation.fotosURLs.isNotEmpty
-                              ? NetworkImage(donation.fotosURLs[0])
-                              : AssetImage(
-                                      'caminho_para_imagem_padrao')
-                                  as ImageProvider<Object>?,
-                        ),
-                        title: Text(donation.nomeProduto),
-                        subtitle: Text(
-                            'Data: ${DateFormat('dd/MM/yyyy').format(donation.dataPublicacao)}'),
-                      ),
+          Expanded(
+            child: isLoading
+                ? Center(
+                    child: CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
+                      strokeWidth: 3,
                     ),
-                  ),
-                );
-              },
-            ),
+                  )
+                : (showOpenDonations
+                        ? openDonations.isEmpty
+                        : closedDonations.isEmpty)
+                    ? Center(
+                        child: Text('Sem doações encontradas'),
+                      )
+                    : ListView.builder(
+                        itemCount: showOpenDonations
+                            ? openDonations.length
+                            : closedDonations.length,
+                        itemBuilder: (context, index) {
+                          final donation = showOpenDonations
+                              ? openDonations[index]
+                              : closedDonations[index];
+                          return GestureDetector(
+                            onTap: () async {
+                              final result = await Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => showOpenDonations
+                                      ? DonationDetailsOng(donation: donation)
+                                      : RecolhidaDonationDetailsOng(
+                                          donation: donation),
+                                ),
+                              );
+
+                              if (result != null) {
+                                await atualizarDoacoes();
+                              }
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
+                              child: Card(
+                                color:
+                                    const Color.fromARGB(223, 255, 255, 255),
+                                margin: const EdgeInsets.all(8),
+                                child: ListTile(
+                                  leading: CircleAvatar(
+                                    backgroundImage:
+                                        donation.fotosURLs.isNotEmpty
+                                            ? NetworkImage(donation.fotosURLs[0])
+                                            : AssetImage(
+                                                    'caminho_para_imagem_padrao')
+                                                as ImageProvider<Object>?,
+                                  ),
+                                  title: Text(donation.nomeProduto),
+                                  subtitle: Text(
+                                      'Data: ${DateFormat('dd/MM/yyyy').format(donation.dataPublicacao)}'),
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
           ),
         ],
       ),
-    );      
+    );
   }
 }

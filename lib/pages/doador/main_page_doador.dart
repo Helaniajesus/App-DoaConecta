@@ -1,4 +1,4 @@
-import 'package:doa_conecta_app/pages/doador/contatos_page_doador.dart';
+import 'package:doa_conecta_app/pages/doador/contato_page_doador.dart';
 import 'package:doa_conecta_app/pages/doador/doacao/doar_page_doador.dart';
 import 'package:doa_conecta_app/pages/doador/explorar_page_doador.dart';
 import 'package:doa_conecta_app/pages/doador/perfil_page_doador.dart';

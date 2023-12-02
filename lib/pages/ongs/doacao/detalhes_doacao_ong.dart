@@ -10,6 +10,7 @@ class DonationDetailsOng extends StatelessWidget {
   final Donation donation;
 
   DonationDetailsOng({required this.donation});
+  
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +24,10 @@ class DonationDetailsOng extends StatelessWidget {
           PopupMenuButton<String>(
             offset: Offset(0, 50),
             itemBuilder: (BuildContext context) {
-              return {'Enviar nova data de recolhimento'}.map((String choice) {
+              return {
+                'Enviar nova data de recolhimento',
+                'Desistir do recolhimento'
+              }.map((String choice) {
                 return PopupMenuItem<String>(
                   value: choice,
                   child: Text(choice),
@@ -39,6 +43,9 @@ class DonationDetailsOng extends StatelessWidget {
                         NovoRecolherDoacaoPage(donation: donation),
                   ),
                 );
+              } else if (choice == 'Desistir do recolhimento') {
+                removerDestinatario(donation.id);
+                Navigator.pop(context);
               }
             },
           ),

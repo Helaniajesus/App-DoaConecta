@@ -1,57 +1,15 @@
-/*import 'package:doa_conecta_app/pages/doador/notificacao/detalhes_notificacao_page.dart';
-import 'package:doa_conecta_app/pages/doador/notificacao/notificacao.dart';
-import 'package:flutter/material.dart';
-
-
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.green,
-          title: const Text("Notificações"),
-          centerTitle: true,
-          leadingWidth: 100.0,
-      ),
-      body: ListView.builder(
-        itemCount: notificacoes.length,
-        itemBuilder: (context, index) {
-          return Card(
-            margin: EdgeInsets.all(15.0),
-            child: ListTile(
-              contentPadding: EdgeInsets.all(20.0), // Ajuste o padding conforme necessário
-              title: Text(
-                "${notificacoes[index].ong} enviou uma proposta de recolhimento para a doação nº${notificacoes[index].numeroDoacao}",
-              ),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => DetalhesNotificacaoPage(
-                      notificacao: notificacoes[index],
-                    ),
-                  ),
-                );
-              },
-            ),
-          );
-        },
-      ),
-    );
-  }
-}*/
 
 import 'package:doa_conecta_app/pages/doador/notificacao/detalhes_notificacao_page.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-class AlertPage extends StatefulWidget {
+class AlertPageONG extends StatefulWidget {
   @override
-  _AlertPageState createState() => _AlertPageState();
+  _AlertPageONG createState() => _AlertPageONG();
 }
 
-class _AlertPageState extends State<AlertPage> {
+class _AlertPageONG extends State<AlertPageONG> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   late User _currentUser;
@@ -71,34 +29,39 @@ class _AlertPageState extends State<AlertPage> {
           false; // Quando o usuário é carregado, definimos o isLoading como false
     });
   }
+Future<List<Map<String, dynamic>>> _getAlertsForOng() async {
+  List<Map<String, dynamic>> alerts = [];
 
-  Future<List<Map<String, dynamic>>> _getAlertsForDonor() async {
-    List<Map<String, dynamic>> alerts = [];
+  try {
+    QuerySnapshot<Map<String, dynamic>> donationQuery = await _firestore
+        .collection('doacao')
+        .where('ong', isEqualTo: _currentUser.uid)
+        .get();
 
-    try {
-      QuerySnapshot<Map<String, dynamic>> donationQuery = await _firestore
-          .collection('doacao')
-          .where('doador', isEqualTo: _currentUser.uid)
-          .get();
+    List<String> donationIds =
+        donationQuery.docs.map((doc) => doc.id).toList();
 
-      List<String> donationIds =
-          donationQuery.docs.map((doc) => doc.id).toList();
+    for (String donationId in donationIds) {
+  QuerySnapshot<Map<String, dynamic>> alertQuery = await _firestore
+    .collection('alertas')
+    .where('idDoacao', isEqualTo: donationId)
+    .get();
 
-      for (String donationId in donationIds) {
-        QuerySnapshot<Map<String, dynamic>> alertQuery = await _firestore
-            .collection('alertas')
-            .where('idDoacao', isEqualTo: donationId)
-            .get();
+  List<Map<String, dynamic>> filteredAlerts = alertQuery.docs
+    .map((alertDoc) => alertDoc.data())
+    .where((alertData) => alertData['status'] == true)
+    .toList();
 
-        alerts.addAll(
-            alertQuery.docs.map((alertDoc) => alertDoc.data()).toList());
-      }
-    } catch (e) {
-      print('Erro ao buscar alertas: $e');
-    }
-
-    return alerts;
+  alerts.addAll(filteredAlerts);
+}
+  } catch (e) {
+    print('Erro ao buscar alertas: $e');
   }
+
+  return alerts;
+}
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -117,7 +80,7 @@ class _AlertPageState extends State<AlertPage> {
   : FutureBuilder(
       // Restante do código
 
-              future: _getAlertsForDonor(),
+              future: _getAlertsForOng(),
               builder: (BuildContext context,
                   AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
@@ -156,12 +119,12 @@ class _AlertPageState extends State<AlertPage> {
           
             String produto = doacaoData['nomeProduto']; // Nome da ONG
 
-          String idOng = doacaoData['ong'];
+          String idDoador = doacaoData['doador'];
 
           return FutureBuilder<DocumentSnapshot>(
             future: FirebaseFirestore.instance
-                .collection('ong')
-                .doc(idOng)
+                .collection('doador')
+                .doc(idDoador)
                 .get(),
             builder: (BuildContext context,
                 AsyncSnapshot<DocumentSnapshot> ongSnapshot) {
@@ -171,11 +134,11 @@ class _AlertPageState extends State<AlertPage> {
                   !ongSnapshot.data!.exists) {
                 return Text('');
               } else {
-                Map<String, dynamic> ongData =
+                Map<String, dynamic> doadorData =
                     ongSnapshot.data!.data() as Map<String,
                         dynamic>;
 
-                String nomeOng = ongData['nome']; // Nome da ONG
+                String nomeDoador = doadorData['nome']; // Nome da ONG
 
                 return GestureDetector(
                   onTap: () {
@@ -188,7 +151,7 @@ class _AlertPageState extends State<AlertPage> {
                     ).then((_) {
                       
                      setState(() {
-         _AlertPageState();});
+         _AlertPageONG();});
       });
                   },
                   child: Card(
@@ -198,7 +161,7 @@ class _AlertPageState extends State<AlertPage> {
           padding: EdgeInsets.symmetric(vertical: 8.0), // Margem vertical para este elemento
           child: ListTile(
                       title: Text(
-                        '$nomeOng enviou uma proposta de recolhimento para a doação: $produto',
+                        'Doador: $nomeDoador respondeu sua proposta de recolhimento para a doação: $produto',
                         // Aqui você exibirá o nome da ONG correspondente ao alerta
                       ),
                     ),

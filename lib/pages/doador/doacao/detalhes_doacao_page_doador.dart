@@ -101,7 +101,6 @@ class DonationDetails extends StatelessWidget {
         ListTile(
           title: Text('Destinatário'),
           subtitle: Text(ongName),
-          //subtitle: Text(donation.id),
         ),
         ListTile(
           title: Text('Fotos'),

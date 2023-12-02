@@ -1,5 +1,3 @@
-
-
 /*class ContatoPage extends StatefulWidget {
   const ContatoPage({Key? key}) : super(key: key);
 
@@ -73,14 +71,15 @@ class Contact {
 }
 
 */
+import 'package:doa_conecta_app/pages/doador/firebase/doador_firebase.dart';
+import 'package:doa_conecta_app/pages/ongs/chat_ong.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:doa_conecta_app/doador.dart';
 import 'package:doa_conecta_app/doacao.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-
-class ContatoPage extends StatefulWidget {
+/*class ContatoPage extends StatefulWidget {
   const ContatoPage({Key? key}) : super(key: key);
 
   @override
@@ -199,3 +198,202 @@ class _ContatoPageState extends State<ContatoPage> {
     );
   }
 }
+*/
+
+class ContatoPage extends StatefulWidget {
+  const ContatoPage({Key? key}) : super(key: key);
+
+  @override
+  State<ContatoPage> createState() => _ContatoPageState();
+}
+
+
+Future<List<Donation>> obterDoacoesDaOng(String idOng) async {
+  try {
+    QuerySnapshot doacoesSnapshot = await FirebaseFirestore.instance
+        .collection('doacao')
+        .where('ong', isEqualTo: idOng)
+        .get();
+
+    List<Donation> listaDoacoes = doacoesSnapshot.docs.map((doc) {
+      Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+      return Donation(
+        id: doc.id,
+        categoria: data['categoria'] ?? '',
+        nomeProduto: data['nomeProduto'] ?? '',
+        descricao: data['descricao'] ?? '',
+        qualidade: data['qualidade'] ?? '',
+        tamanho: data['tamanho'] ?? '',
+        enderecoRetirada: data['enderecoRetirada'] ?? '',
+        fotosURLs: List<String>.from(data['fotosURLs'] ?? []),
+        dataPublicacao: data['dataPublicacao'].toDate(),
+        status: data['status'] ?? false,
+        idONG: data['ong'] ?? '',
+        idDoador: data['doador'] ?? '',
+      );
+    }).toList();
+    return listaDoacoes;
+  } catch (e) {
+    print('Erro ao obter as doações da ONG: $e');
+    return []; // Retorna uma lista vazia em caso de erro
+  }
+}
+
+Future<List<Donation>> obterDoacoesAbertasDaOng(String idOng) async {
+  List<Donation> doacoes = await obterDoacoesDaOng(idOng);
+  return doacoes.where((doacao) => doacao.status).toList();
+}
+
+Future<List<Donation>> obterDoacoesFechadasDaOng(String idOng) async {
+  List<Donation> doacoes = await obterDoacoesDaOng(idOng);
+  return doacoes.where((doacao) => !doacao.status).toList();
+}
+
+
+class _ContatoPageState extends State<ContatoPage> {
+  late String idOng;
+  List<Donation> doacoesAbertas = [];
+  List<Donation> doacoesFechadas = [];
+
+  @override
+  void initState() {
+    super.initState();
+    obterIdOng();
+  }
+
+  Future<void> obterIdOng() async {
+    try {
+      User? user = FirebaseAuth.instance.currentUser;
+
+      if (user != null) {
+        idOng = user.uid;
+        await carregarDoacoes();
+      }
+    } catch (e) {
+      print('Erro ao obter o ID da ONG: $e');
+    }
+  }
+
+  Future<void> carregarDoacoes() async {
+    try {
+      doacoesAbertas = await obterDoacoesAbertasDaOng(idOng);
+      doacoesFechadas = await obterDoacoesFechadasDaOng(idOng);
+      print('Doacoes Abertas: $doacoesAbertas');
+      setState(() {}); // Atualiza o estado para refletir as alterações
+    } catch (e) {
+      print('Erro ao carregar as doações: $e');
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.green,
+          centerTitle: true,
+          automaticallyImplyLeading: false,
+          leadingWidth: 100.0,
+          title: const TabBar(
+            tabs: [
+              Tab(text: 'Conversas Abertas'),
+              Tab(text: 'Conversas Fechadas'),
+            ],
+            indicatorColor: Colors.white,
+          ),
+        ),
+        body: TabBarView(
+          children: [
+            // Conteúdo da aba "Conversas Abertas"
+            doacoesAbertas.isEmpty
+                ? Center(
+                    child: Container(
+                      height: 50,
+                      child: const Text('Sem conversas abertas.'),
+                    ),
+                  )
+                : ListView.builder(
+                    itemCount: doacoesAbertas.length,
+                    itemBuilder: (context, index) {
+                      final donation = doacoesAbertas[index];
+                      return FutureBuilder(
+                        
+                        future: obterDoadorPorId(donation.idDoador),
+                        builder: (BuildContext context,
+                            AsyncSnapshot<Doador?> snapshot) {
+                          Doador? doador = snapshot.data;
+                          return ListTile(
+                            leading: CircleAvatar(
+                          backgroundImage: donation.fotosURLs.isNotEmpty
+                              ? NetworkImage(donation.fotosURLs[0])
+                              : AssetImage(
+                                      'caminho_para_imagem_padrao')
+                                  as ImageProvider<Object>?,
+                        ),
+                            title: Text(
+                                doador?.nome ?? 'Nome não encontrado'),
+                            subtitle: Text(donation.nomeProduto),
+                            onTap: () {
+                               Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ChatPage(doador: doador),
+                        ),
+                      );
+                            },
+                          );
+                        },
+                      );
+                    },
+                  ),
+
+            // Conteúdo da aba "Conversas Fechadas"
+            doacoesFechadas.isEmpty
+                ? Center(
+                    child: Container(
+                      height: 50,
+                      child: const Text('Sem conversas fechadas.'),
+                    ),
+                  )
+                : ListView.builder(
+                    itemCount: doacoesFechadas.length,
+                    itemBuilder: (context, index) {
+                      final donation = doacoesFechadas[index];
+                      return FutureBuilder(
+                        future: obterDoadorPorId(donation.idDoador),
+                        builder: (BuildContext context,
+                            AsyncSnapshot<Doador?> snapshot) {
+                          Doador? doador = snapshot.data;
+                          return ListTile(
+                            leading: CircleAvatar(
+                          backgroundImage: donation.fotosURLs.isNotEmpty
+                              ? NetworkImage(donation.fotosURLs[0])
+                              : AssetImage(
+                                      'caminho_para_imagem_padrao')
+                                  as ImageProvider<Object>?,
+                        ),
+                            title: Text(
+                                doador?.nome ?? 'Nome não encontrado'),
+                            subtitle: Text(donation.nomeProduto),
+                            onTap: () {
+                              Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ChatPage(doador: doador),
+                        ),
+                      );
+                            },
+                          );
+                        },
+                      );
+                    },
+                  ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+

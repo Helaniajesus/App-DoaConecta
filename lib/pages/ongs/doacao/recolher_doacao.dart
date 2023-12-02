@@ -99,6 +99,8 @@ class _RecolherDoacaoPageState extends State<RecolherDoacaoPage> {
                       dataRecolhimento: dataRecolhimento ?? DateTime.now(),
                       horarioRecolhimento: horario,
                       descricao: descricao.isNotEmpty ? descricao : "", 
+                      status: false,
+                      aceite:false,
                       idDoacao: widget.donation.id,
                       idOng: idOng,
                     );

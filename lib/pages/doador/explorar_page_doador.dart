@@ -75,7 +75,7 @@ class _ExplorarDoadorPageState extends State<ExplorarDoadorPage> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => NotificacoesPage(),
+                  builder: (context) => AlertPage(),
                 ),
               );
             },

@@ -189,13 +189,13 @@ import 'package:doa_conecta_app/pages/doador/notificacao/notificacao_page.dart';
 import 'package:doa_conecta_app/pages/doador/perfilOng.dart';
 import 'package:doa_conecta_app/pages/ongs/doacao/detalhes_doacao_explorar_ong.dart';
 import 'package:doa_conecta_app/pages/ongs/doacao/detalhes_doacao_ong.dart';
+import 'package:doa_conecta_app/pages/ongs/notificacao/notificacao_page_ong.dart';
 import 'package:flutter/material.dart';
 
 class ExplorarOngPage extends StatefulWidget {
   @override
   _ExplorarOngPageState createState() => _ExplorarOngPageState();
 }
-
 class _ExplorarOngPageState extends State<ExplorarOngPage> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   List<Donation> doacoes = [];
@@ -266,7 +266,7 @@ class _ExplorarOngPageState extends State<ExplorarOngPage> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => NotificacoesPage(),
+                  builder: (context) => AlertPageONG(),
                 ),
               );
             },
@@ -305,40 +305,44 @@ class _ExplorarOngPageState extends State<ExplorarOngPage> {
           //-------------------------- LISTA DE DOAÇOES ----------------------------//
           Expanded(
             child: isLoading
-                ? Center(child: CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
-                  strokeWidth: 3,)) // Indicador de progresso enquanto carrega
+                ? Center(
+                    child: CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
+                      strokeWidth: 3,
+                    ),
+                  )
                 : ListView.builder(
-              itemCount: doacoesFiltradas.length,
-              itemBuilder: (context, index) {
-                if (doacoesFiltradas[index].idONG.isEmpty) {
-                return Card(
-                  margin: EdgeInsets.all(16.0),
-                  child: ListTile(
-                    leading: CircleAvatar(
-  backgroundImage: doacoesFiltradas[index].fotosURLs != null &&
-          doacoesFiltradas[index].fotosURLs.isNotEmpty
-      ? NetworkImage(doacoesFiltradas[index].fotosURLs[0]) // Usando a primeira URL da lista
-      : AssetImage('caminho/para/imagem_padrao.png') as ImageProvider<Object>?,
-),
-
-                    title: Text(doacoesFiltradas[index].nomeProduto),
-                    subtitle: Text(doacoesFiltradas[index].enderecoRetirada),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => DonationDetailsExplorarOng(donation: doacoesFiltradas[index]),
-                        ),
-                      );
+                    itemCount: doacoesFiltradas.length,
+                    itemBuilder: (context, index) {
+                      if (doacoesFiltradas[index].idONG.isEmpty) {
+                        return Card(
+                          margin: EdgeInsets.all(16.0),
+                          child: ListTile(
+                            leading: CircleAvatar(
+                              backgroundImage: doacoesFiltradas[index].fotosURLs != null &&
+                                      doacoesFiltradas[index].fotosURLs.isNotEmpty
+                                  ? NetworkImage(doacoesFiltradas[index].fotosURLs[0]) // Usando a primeira URL da lista
+                                  : AssetImage('caminho/para/imagem_padrao.png') as ImageProvider<Object>?,
+                            ),
+                            title: Text(doacoesFiltradas[index].nomeProduto),
+                            subtitle: Text(doacoesFiltradas[index].enderecoRetirada),
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => DonationDetailsExplorarOng(donation: doacoesFiltradas[index]),
+                                ),
+                              ).then((_) {
+                              _carregarDadosFirestore(); // Recarrega os dados quando voltar
+                            });
+                            },
+                          ),
+                        );
+                      } else {
+                        return SizedBox(); // Retorna um widget vazio para as doações com ID de ONG preenchido
+                      }
                     },
                   ),
-                );
-              } else {
-                  return SizedBox(); // Retorna um widget vazio para as doações com ID de ONG preenchido
-                }
-              },
-            ),
           ),
         ],
       ),

@@ -1,4 +1,4 @@
-import 'package:doa_conecta_app/pages/doador/mensagem_page_doador_page.dart';
+/*import 'package:doa_conecta_app/pages/doador/mensagem_page_doador_page.dart';
 import 'package:flutter/material.dart';
 
 class ContatoPageDoador extends StatefulWidget {
@@ -89,3 +89,4 @@ final List<Contact> contacts = [
     avatar: 'assets/avatar3.jpg',
   ),
 ];
+*/

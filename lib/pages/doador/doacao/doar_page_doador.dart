@@ -161,8 +161,8 @@ class _DoarDoadorPageState extends State<DoarDoadorPage> {
                               (donationData['dataPublicacao'] as Timestamp)
                                   .toDate(),
                           status: donationData['status'] ?? false,
-                          idONG: donationData['idONG'] ?? '',
-                          idDoador: donationData['idDoador'] ?? '',
+                          idONG: donationData['ong'] ?? '',
+                          idDoador: donationData['doador'] ?? '',
                         );
                         print('Doação: $donation');
 

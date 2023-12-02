@@ -8,6 +8,7 @@ Future<void> salvarDadosPerfilNoFirebaseOng(String uid) async {
         .collection('perfil')
         .add({
       'idOng': uid,
+      'idong': 'idOng',
       'descricao': '',
       'fotoPerfil': '',
       'fotosURLs': '',

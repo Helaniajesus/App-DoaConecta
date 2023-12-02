@@ -7,6 +7,8 @@ Future<void> enviarDadosRecolhimentoParaFirestore(AlertaRecolhimento alerta) asy
       'dataRecolhimento': alerta.dataRecolhimento,
       'horarioRecolhimento': alerta.horarioRecolhimento,
       'descricao': alerta.descricao,
+      'status': alerta.status,
+      'aceite': alerta.aceite,
       'idDoacao': alerta.idDoacao,
       'idOng': alerta.idOng,
     });
@@ -35,5 +37,56 @@ Future<void> atualizarDadosRecolhimentoNoFirestore(AlertaRecolhimento alerta) as
   } catch (error) {
     print('Erro ao atualizar os dados: $error');
     throw ('Erro ao atualizar os dados: $error');
+  }
+}
+
+
+Future<void> aceitarRecolhimentoNoFirestore(String idDoacao) async {
+ try {
+    final querySnapshot = await FirebaseFirestore.instance
+        .collection('alertas')
+        .where('idDoacao', isEqualTo: idDoacao)
+        .get();
+
+    if (querySnapshot.docs.isNotEmpty) {
+      final docId = querySnapshot.docs.first.id;
+      await FirebaseFirestore.instance
+          .collection('alertas')
+          .doc(docId)
+          .update({
+            'status': true,
+            'aceite': true,
+          });
+      print('Status da doação alterado para verdadeiro com sucesso!');
+    } else {
+      print('Documento não encontrado para o ID de doação fornecido.');
+    }
+  } catch (e) {
+    print('Erro ao alterar o status da doação: $e');
+  }
+}
+
+Future<void> recusarRecolhimentoNoFirestore(String idDoacao) async {
+ try {
+    final querySnapshot = await FirebaseFirestore.instance
+        .collection('alertas')
+        .where('idDoacao', isEqualTo: idDoacao)
+        .get();
+
+    if (querySnapshot.docs.isNotEmpty) {
+      final docId = querySnapshot.docs.first.id;
+      await FirebaseFirestore.instance
+          .collection('alertas')
+          .doc(docId)
+          .update({
+            'status': true,
+            'aceite': false,
+          });
+      print('Status da doação alterado para verdadeiro com sucesso!');
+    } else {
+      print('Documento não encontrado para o ID de doação fornecido.');
+    }
+  } catch (e) {
+    print('Erro ao alterar o status da doação: $e');
   }
 }

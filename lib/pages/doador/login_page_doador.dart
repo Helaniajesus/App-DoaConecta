@@ -12,7 +12,7 @@ class LoginPageDoador extends StatefulWidget {
 }
 
 class _LoginPageDoadorState extends State<LoginPageDoador> {
-  var emailController = TextEditingController(text:"teste.silva@gmail.com");
+  var emailController = TextEditingController(text:"doador.teste@gmail.com");
   var senhaController = TextEditingController(text:"123456");
   bool isObscureText = true;
   Color deepRed = const Color.fromARGB(255, 128, 0, 0);
