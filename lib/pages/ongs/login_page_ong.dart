@@ -14,8 +14,8 @@ class LoginPageOng extends StatefulWidget {
 
 class _LoginPageOngState extends State<LoginPageOng> {
 
-  var emailController = TextEditingController(text: "teste.perfil@gmail.com");
-  var senhaController = TextEditingController(text: "1111111");
+  var emailController = TextEditingController(/*text: "teste.perfil@gmail.com"*/);
+  var senhaController = TextEditingController(/*text: "1111111"*/);
 
   bool isObscureText = true;
 
