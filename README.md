@@ -2,15 +2,6 @@
 
 A new Flutter project.
 
-## Getting Started
+Esse aplicativo foi criado para o trabalho de conclusão de curso.
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+O desenvolvimento desse aplicativo tem como objetivo de facilitar a doação de itens em bom estado, reduzindo o descarte desnecessário e promovendo a sustentabilidade. O problema abordado é a falta de informação e incentivo que leva ao descarte de itens em boas condições. O aplicativo, denominado "DoaConecta," visa conectar doadores a organizações não governamentais (ONGs) e instituições que necessitam de doações, resolvendo problemas de comunicação, ineficiência na organização das doações, falta de engajamento dos doadores e danos ao meio ambiente.
